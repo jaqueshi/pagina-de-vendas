@@ -661,8 +661,8 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
       <button onclick="showTab('orc',this)">🎯 Orçamento</button>
       <button onclick="showTab('metas',this)">⭐ Metas</button>
       <button onclick="showTab('fixas',this)">📌 Contas Fixas</button>
-      <button onclick="showTab('rel',this)">📄 Relatório</button>
       <button onclick="showTab('dividas',this)">🔴 Dívidas</button>
+      <button onclick="showTab('rel',this)">📄 Relatório</button>
     </div>
     <div class="nav-fade-right"></div>
     </div>
@@ -1505,7 +1505,7 @@ function renderRelatorio(){
       <div><p class="sec-title" style="margin-bottom:4px">Relatório — ${MESES[filterMes-1]} ${filterAno}</p><p style="font-size:13px;color:var(--muted)">Resumo completo do período</p></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn-download" onclick="downloadCSV()">⬇ Baixar mês</button>
-        <button class="btn-download" onclick="downloadCSVAnual()" style="background:var(--green-dark)">⬇ Baixar ano ${filterAno}</button>
+        <button class="btn-download" onclick="downloadCSVAnual()" style="background:var(--caramel)">⬇ Baixar ano ${filterAno}</button>
       </div>
     </div>
     <div class="filter-row"><label>Período:</label>${filterSelects()}</div>
