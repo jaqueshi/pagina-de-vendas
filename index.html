@@ -338,6 +338,8 @@
     .btn-primary, .btn-ghost { width: 100%; max-width: 320px; text-align: center; font-size: 15px; padding: 14px 24px; }
 
     /* SOBRE */
+    .about-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .about-inner p { font-size: 15px !important; }
     .about-cards { grid-template-columns: 1fr; gap: 12px; }
 
     /* DOR */
@@ -443,7 +445,7 @@
 
 <!-- SOBRE O APP -->
 <section style="padding: 80px 5%; background: var(--white);">
-  <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
+  <div class="about-inner" style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
     <div>
       <div class="section-label">O que é</div>
       <h2 style="font-size: clamp(28px, 4vw, 46px); color: var(--dark); margin-bottom: 20px;">
@@ -578,7 +580,7 @@
 <section class="audience" id="para-voce">
   <div class="audience-inner">
     <div class="section-label">Para quem é</div>
-    <h2>Feito pra quem se vira no dia a dia</h2>
+    <h2>Feito pra quem quer ficar de bem com a grana no fim do mês</h2>
     <div class="audience-tabs">
       <button class="tab-btn active" onclick="showTab('dividas')">Estou endividado</button>
       <button class="tab-btn" onclick="showTab('zerinho')">Quero começar do zero</button>
@@ -663,8 +665,8 @@
     <p class="pricing-sub">Tudo incluso. Sem taxas escondidas.</p>
     <div class="plans">
       <div class="plan-card featured">
-        <div class="plan-badge">🐾 Plano Capivara $</div>
-        <div class="plan-name">Plano Capivara $</div>
+        <div class="plan-badge">Plano Capivara</div>
+        <div class="plan-name">Plano Capivara</div>
         <div class="plan-price">R$19,90<sub>/mês</sub></div>
         <div class="plan-annual">ou R$167/ano — economize 28% (R$13,90/mês)</div>
         <div class="plan-divider"></div>
@@ -676,7 +678,7 @@
         <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Importação CSV e Excel</div>
         <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Notificações inteligentes</div>
         <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Suporte via WhatsApp</div>
-        <button class="plan-btn plan-btn-primary" onclick="abrirCheckout('mensal')">Quero o Plano Capivara $</button>
+        <button class="plan-btn plan-btn-primary" onclick="abrirCheckout('mensal')">Quero o Plano Capivara</button>
       </div>
     </div>
   </div>
@@ -755,7 +757,7 @@ const politicas = {
     <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O De Bem com a Minha Grana é um aplicativo de controle financeiro pessoal que permite registrar receitas, despesas, metas, dívidas e contas fixas. O aplicativo não realiza movimentações bancárias, não tem acesso a contas bancárias e não é uma instituição financeira.</p>
 
     <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">3. Plano e Cobrança</h3>
-    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O serviço é oferecido mediante assinatura. O <strong>Plano Capivara $</strong> está disponível nas modalidades mensal (R$19,90/mês) e anual (R$167,00/ano). A cobrança é processada pelo Asaas, plataforma de pagamentos homologada pelo Banco Central do Brasil. O acesso é liberado automaticamente após a confirmação do pagamento.</p>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O serviço é oferecido mediante assinatura. O <strong>Plano Capivara</strong> está disponível nas modalidades mensal (R$19,90/mês) e anual (R$167,00/ano). A cobrança é processada pelo Asaas, plataforma de pagamentos homologada pelo Banco Central do Brasil. O acesso é liberado automaticamente após a confirmação do pagamento.</p>
 
     <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">4. Responsabilidades do Usuário</h3>
     <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O usuário é responsável pela veracidade dos dados cadastrados, pela guarda de sua senha de acesso e pelo uso adequado da plataforma. É proibido utilizar o serviço para fins ilegais ou em desacordo com a legislação brasileira.</p>
@@ -901,7 +903,7 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
   <div style="background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:460px;position:relative;max-height:90vh;overflow-y:auto;">
     <button onclick="fecharCheckout()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#5a6e54;">×</button>
     <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-family:'Roboto',sans-serif;font-size:20px;font-weight:700;color:#1c2b18;margin-bottom:4px;">🐾 Plano Capivara $</div>
+      <div style="font-family:'Roboto',sans-serif;font-size:20px;font-weight:700;color:#1c2b18;margin-bottom:4px;">Plano Capivara</div>
       <div id="checkout-preco" style="font-size:32px;font-weight:700;color:#4a7538;font-family:'Roboto',sans-serif;">R$19,90<span style="font-size:14px;font-weight:400;color:#5a6e54;">/mês</span></div>
     </div>
 
