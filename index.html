@@ -314,11 +314,89 @@
     .pain-cards { grid-template-columns: 1fr; }
     .features-grid { grid-template-columns: 1fr 1fr; }
     .tab-content.active { grid-template-columns: 1fr; }
+    .tab-visual { display: none; }
     .plans { grid-template-columns: 1fr; }
     .hero-sub { margin: 0 auto 36px; }
+    .capy-banner { flex-direction: column; text-align: center; gap: 32px; }
+    .capy-banner img { max-width: 160px; }
   }
-  @media (max-width: 540px) {
-    .features-grid { grid-template-columns: 1fr; }
+
+  @media (max-width: 600px) {
+    /* NAV */
+    nav { padding: 0 4%; height: 56px; }
+    .nav-logo { font-size: 14px; }
+    .nav-cta { padding: 8px 16px; font-size: 13px; }
+
+    /* HERO */
+    .hero { padding: 80px 4% 50px; }
+    .hero h1 { font-size: 32px; letter-spacing: -.01em; }
+    .hero-sub { font-size: 15px; margin-bottom: 28px; }
+    .hero-capy img { max-width: 160px; }
+    .hero-stats { gap: 20px; flex-wrap: wrap; justify-content: center; padding-top: 24px; margin-top: 28px; }
+    .hero-stat-num { font-size: 20px; }
+    .hero-btns { flex-direction: column; align-items: center; gap: 10px; }
+    .btn-primary, .btn-ghost { width: 100%; max-width: 320px; text-align: center; font-size: 15px; padding: 14px 24px; }
+
+    /* SOBRE */
+    .about-cards { grid-template-columns: 1fr; gap: 12px; }
+
+    /* DOR */
+    .pain { padding: 60px 4%; }
+    .pain h2 { font-size: 26px; margin-bottom: 32px; }
+    .pain-cards { gap: 12px; }
+    .pain-card { padding: 22px 20px; }
+
+    /* FUNCIONALIDADES */
+    .features { padding: 60px 4%; }
+    .features h2 { font-size: 26px; margin-bottom: 36px; }
+    .features-grid { grid-template-columns: 1fr; gap: 2px; }
+    .feat { padding: 24px 20px; }
+    .feat h3 { font-size: 16px; }
+
+    /* PÚBLICO */
+    .audience { padding: 60px 4%; }
+    .audience h2 { font-size: 26px; margin-bottom: 28px; }
+    .audience-tabs { gap: 6px; }
+    .audience-tabs button { font-size: 13px; padding: 8px 14px; }
+    .tab-text h3 { font-size: 22px; }
+    .tab-text p { font-size: 14px; }
+
+    /* PLANOS */
+    .pricing { padding: 60px 4%; }
+    .pricing h2 { font-size: 26px; }
+    .pricing-sub { font-size: 15px; margin-bottom: 36px; }
+    .plan-card { padding: 24px 20px; }
+    .plan-price { font-size: 32px; }
+    .plan-btn { font-size: 15px; padding: 14px; }
+
+    /* BANNER CAPIVARA */
+    .capy-banner { padding: 60px 4%; }
+    .capy-banner h2 { font-size: 24px; }
+    .capy-banner p { font-size: 15px; }
+    .capy-banner .btn-primary { font-size: 15px; padding: 14px 28px; }
+
+    /* FAQ */
+    .faq { padding: 60px 4%; }
+    .faq h2 { font-size: 24px; margin-bottom: 28px; }
+    .faq-q { font-size: 15px; }
+    .faq-a { font-size: 14px; }
+
+    /* FOOTER */
+    footer { padding: 40px 4% 24px; }
+    .footer-logo { font-size: 17px; }
+    .footer-links { gap: 14px; }
+    .footer-links a { font-size: 13px; }
+
+    /* CHECKOUT MODAL */
+    #modal-checkout > div { padding: 24px 20px !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; border-radius: 16px 16px 0 0 !important; position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; }
+    #modal-checkout { align-items: flex-end !important; }
+
+    /* MODAL POLÍTICAS */
+    #modal-politica { padding: 16px !important; }
+    #modal-politica > div { padding: 24px 20px !important; }
+
+    /* WHATSAPP FLOAT */
+    .whatsapp-float { width: 48px; height: 48px; bottom: 20px; right: 16px; }
   }
 </style>
 </head>
