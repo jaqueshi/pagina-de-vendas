@@ -1016,7 +1016,7 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
     try {
       const res = await fetch(SUPABASE_FUNC_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkZGN6ZGZnZWptYnFicW1jYXVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MzA4MjIsImV4cCI6MjA4OTUwNjgyMn0.LIzK1fW3KReV7qgLjsrxs9WAdimC4PimyyWokIiWA1Q' },
         body: JSON.stringify({ nome, email, cpf, plano: planoSelecionado })
       });
       const data = await res.json();
