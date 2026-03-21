@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De Bem com a Minha Grana — Controle financeiro do jeito certo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #6B9E52;
+    --green-dark: #4a7538;
+    --green-light: #e8f2e2;
+    --green-xlight: #f4f9f1;
+    --caramel: #D4956A;
+    --caramel-light: #f5e8df;
+    --dark: #1c2b18;
+    --dark2: #2a3d24;
+    --text: #1e2d1a;
+    --muted: #5a6e54;
+    --white: #fdfcf8;
+    --border: rgba(107,158,82,0.18);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+  h1,h2,h3,h4 { font-family: 'Roboto', sans-serif; line-height: 1.15; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%; height: 64px;
+    background: rgba(253,252,248,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Roboto', sans-serif; font-weight: 800; font-size: 17px; color: var(--green-dark); text-decoration: none; }
+  .nav-logo span { color: var(--caramel); }
+  .nav-cta {
+    background: var(--green); color: #fff;
+    border: none; border-radius: 40px;
+    padding: 9px 22px; font-size: 14px; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: background .2s, transform .15s;
+  }
+  .nav-cta:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--dark);
+    display: flex; align-items: center;
+    padding: 100px 5% 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 75% 55%, rgba(107,158,82,0.22) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    max-width: 1100px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 420px; gap: 48px; align-items: center;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(107,158,82,0.15); border: 1px solid rgba(107,158,82,0.3);
+    color: #9fd47e; font-size: 13px; font-weight: 500;
+    padding: 5px 14px; border-radius: 40px;
+    margin-bottom: 24px;
+  }
+  .hero-tag span { width: 7px; height: 7px; border-radius: 50%; background: #6B9E52; display: inline-block; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .hero h1 {
+    font-size: clamp(38px, 5.5vw, 68px);
+    color: #fff; font-weight: 800;
+    margin-bottom: 20px; letter-spacing: -.02em;
+  }
+  .hero h1 em { color: var(--caramel); font-style: normal; }
+  .hero-sub {
+    font-size: 18px; color: rgba(255,255,255,0.65);
+    line-height: 1.7; margin-bottom: 36px; max-width: 480px;
+  }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--green); color: #fff;
+    padding: 16px 32px; border-radius: 40px;
+    font-size: 16px; font-weight: 500; text-decoration: none;
+    transition: background .2s, transform .15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--green-dark); transform: translateY(-2px); }
+  .btn-ghost {
+    background: transparent; color: rgba(255,255,255,0.7);
+    padding: 16px 28px; border-radius: 40px;
+    font-size: 16px; font-weight: 500; text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: border-color .2s, color .2s;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+  .hero-capy {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .hero-capy img {
+    width: 100%; max-width: 380px;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.4));
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+  .hero-stats {
+    display: flex; gap: 32px; margin-top: 40px;
+    padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .hero-stat-num { font-family: 'Roboto', sans-serif; font-size: 24px; font-weight: 800; color: var(--green); }
+  .hero-stat-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+  /* DOR */
+  .pain {
+    background: var(--green-xlight);
+    padding: 80px 5%;
+  }
+  .pain-inner { max-width: 1000px; margin: 0 auto; }
+  .pain h2 { font-size: clamp(26px, 4vw, 42px); text-align: center; margin-bottom: 14px; color: var(--dark); }
+  .pain-sub { text-align: center; color: var(--muted); font-size: 17px; margin-bottom: 48px; }
+  .pain-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pain-card {
+    background: #fff; border-radius: var(--radius);
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    position: relative;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .pain-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(74,117,56,0.1); }
+  .pain-icon { font-size: 32px; margin-bottom: 14px; }
+  .pain-card h3 { font-size: 17px; margin-bottom: 8px; color: var(--dark); }
+  .pain-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .pain-card .arrow {
+    position: absolute; bottom: 20px; right: 20px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--green-light); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--green-dark);
+  }
+
+  /* FEATURES */
+  .features { padding: 100px 5%; background: var(--white); }
+  .features-inner { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 12px; font-weight: 500; letter-spacing: .1em;
+    color: var(--green); text-transform: uppercase; margin-bottom: 12px;
+  }
+  .features h2 { font-size: clamp(28px, 4vw, 46px); margin-bottom: 56px; max-width: 500px; color: var(--dark); }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .feat {
+    padding: 32px 28px;
+    border: 1px solid var(--border);
+    transition: background .2s;
+  }
+  .feat:hover { background: var(--green-xlight); }
+  .feat-num { font-family: 'Roboto', sans-serif; font-size: 13px; color: var(--caramel); font-weight: 700; margin-bottom: 14px; }
+  .feat h3 { font-size: 18px; margin-bottom: 10px; color: var(--dark); }
+  .feat p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* PUBLICOS */
+  .audience { padding: 100px 5%; background: var(--dark2); }
+  .audience-inner { max-width: 1100px; margin: 0 auto; }
+  .audience .section-label { color: #9fd47e; }
+  .audience h2 { font-size: clamp(28px, 4vw, 46px); color: #fff; margin-bottom: 48px; }
+  .audience-tabs { display: flex; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 10px 20px; border-radius: 40px; font-size: 14px;
+    border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.5);
+    background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all .2s;
+  }
+  .tab-btn.active, .tab-btn:hover { background: var(--green); border-color: var(--green); color: #fff; }
+  .tab-content { display: none; animation: fadein .3s ease; }
+  .tab-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+  @keyframes fadein { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .tab-text h3 { font-size: 28px; color: #fff; margin-bottom: 16px; }
+  .tab-text p { font-size: 16px; color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 24px; }
+  .tab-feature { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+  .tab-feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 7px; }
+  .tab-feature span { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+  .tab-visual {
+    background: rgba(107,158,82,0.08); border: 1px solid rgba(107,158,82,0.2);
+    border-radius: 20px; padding: 36px 32px;
+  }
+  .tab-visual-title { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 20px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; }
+  .mock-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .mock-item:last-child { border-bottom: none; }
+  .mock-label { font-size: 14px; color: rgba(255,255,255,0.6); }
+  .mock-val { font-family: 'Roboto', sans-serif; font-size: 16px; font-weight: 700; }
+  .mock-val.neg { color: #ff7c7c; }
+  .mock-val.pos { color: #6fd47e; }
+  .mock-val.warn { color: var(--caramel); }
+  .mock-bar-wrap { margin-top: 20px; }
+  .mock-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+  .mock-bar-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+  .mock-bar-fill { height: 100%; border-radius: 3px; }
+
+  /* PLANOS */
+  .pricing { padding: 100px 5%; background: var(--white); }
+  .pricing-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+  .pricing h2 { font-size: clamp(28px, 4vw, 46px); margin-bottom: 14px; color: var(--dark); }
+  .pricing-sub { font-size: 17px; color: var(--muted); margin-bottom: 56px; }
+  .plans { display: grid; grid-template-columns: minmax(280px, 480px); gap: 16px; text-align: left; justify-content: center; }
+  .plan-card {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 32px 28px; position: relative; transition: transform .2s, box-shadow .2s;
+  }
+  .plan-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(74,117,56,0.12); }
+  .plan-card.featured { border-color: var(--green); border-width: 2px; }
+  .plan-badge {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: #fff;
+    font-size: 12px; font-weight: 500; padding: 3px 16px; border-radius: 40px; white-space: nowrap;
+  }
+  .plan-name { font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+  .plan-price { font-family: 'Roboto', sans-serif; font-size: 38px; font-weight: 800; color: var(--green-dark); line-height: 1; margin-bottom: 4px; }
+  .plan-price sub { font-size: 16px; font-weight: 400; color: var(--muted); }
+  .plan-annual { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+  .plan-divider { height: 1px; background: var(--border); margin-bottom: 20px; }
+  .plan-feat { display: flex; gap: 10px; margin-bottom: 10px; font-size: 14px; color: var(--muted); align-items: flex-start; }
+  .plan-feat svg { flex-shrink: 0; margin-top: 3px; }
+  .plan-btn {
+    display: block; text-align: center; margin-top: 28px;
+    padding: 14px; border-radius: 40px;
+    font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer;
+    transition: all .2s;
+  }
+  .plan-btn-primary { background: var(--green); color: #fff; border: none; }
+  .plan-btn-primary:hover { background: var(--green-dark); }
+  .plan-btn-outline { background: transparent; color: var(--green-dark); border: 1.5px solid var(--green); }
+  .plan-btn-outline:hover { background: var(--green-xlight); }
+
+  /* CAPY BANNER */
+  .capy-banner {
+    background: var(--dark); padding: 80px 5%;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .capy-banner::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 50% 80% at 20% 50%, rgba(107,158,82,0.15) 0%, transparent 60%);
+  }
+  .capy-banner-inner {
+    max-width: 800px; text-align: center; position: relative; z-index: 1;
+  }
+  .capy-banner img { width: 120px; margin-bottom: 24px; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.4)); }
+  .capy-banner h2 { font-size: clamp(26px, 4vw, 42px); color: #fff; margin-bottom: 14px; }
+  .capy-banner p { font-size: 17px; color: rgba(255,255,255,0.55); margin-bottom: 36px; }
+  .capy-banner .btn-primary { font-size: 17px; padding: 18px 40px; }
+
+  /* FAQ */
+  .faq { padding: 80px 5%; background: var(--green-xlight); }
+  .faq-inner { max-width: 700px; margin: 0 auto; }
+  .faq h2 { font-size: clamp(24px, 3.5vw, 38px); margin-bottom: 40px; text-align: center; color: var(--dark); }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-q {
+    width: 100%; text-align: left; background: none; border: none;
+    padding: 20px 0; font-size: 16px; font-weight: 500; color: var(--dark);
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .faq-q::after { content: '+'; font-size: 22px; color: var(--green); font-family: 'Roboto', sans-serif; transition: transform .2s; }
+  .faq-item.open .faq-q::after { transform: rotate(45deg); }
+  .faq-a { font-size: 15px; color: var(--muted); line-height: 1.7; max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s; }
+  .faq-item.open .faq-a { max-height: 300px; padding-bottom: 20px; }
+
+  /* FOOTER */
+  footer {
+    background: var(--dark); padding: 48px 5% 32px;
+    text-align: center;
+  }
+  .footer-logo { font-family: 'Roboto', sans-serif; font-weight: 800; font-size: 20px; color: #fff; margin-bottom: 8px; }
+  .footer-logo span { color: var(--caramel); }
+  .footer-sub { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
+  .footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+  .footer-links a { font-size: 14px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color .2s; }
+  .footer-links a:hover { color: #9fd47e; }
+  .footer-bottom { font-size: 12px; color: rgba(255,255,255,0.2); }
+  .whatsapp-float {
+    position: fixed; bottom: 24px; right: 24px; z-index: 200;
+    background: #25D366; color: #fff;
+    width: 54px; height: 54px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    transition: transform .2s;
+  }
+  .whatsapp-float:hover { transform: scale(1.1); }
+
+  @media (max-width: 860px) {
+    .hero-inner { grid-template-columns: 1fr; text-align: center; }
+    .hero-capy { order: -1; }
+    .hero-capy img { max-width: 200px; }
+    .hero-btns { justify-content: center; }
+    .hero-stats { justify-content: center; }
+    .pain-cards { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .tab-content.active { grid-template-columns: 1fr; }
+    .plans { grid-template-columns: 1fr; }
+    .hero-sub { margin: 0 auto 36px; }
+  }
+  @media (max-width: 540px) {
+    .features-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">De Bem com a Minha <span>Grana</span></a>
+  <a class="nav-cta" href="#planos">Assinar agora</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-tag"><span></span> Controle financeiro simples e completo</div>
+      <h1>Sua grana sob controle,<br>do jeito que <em>você</em> entende</h1>
+      <p style="font-size:13px; font-weight:500; color:var(--green); letter-spacing:.06em; text-transform:uppercase; margin-bottom:12px;">Dinheiro organizado, vida tranquila</p>
+      <p class="hero-sub">Sem banco vinculado, sem complicação. Você lança, você enxerga, você decide. Simples assim — e funciona em qualquer dispositivo.</p>
+      <div class="hero-btns">
+        <a class="btn-primary" href="https://jaqueshi.github.io/controlefinanceiro/app.html" target="_blank">Quero controlar minha grana</a>
+        <a class="btn-ghost" href="#planos">Ver planos</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">R$19,90</div>
+          <div class="hero-stat-label">por mês</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">R$167</div>
+          <div class="hero-stat-label">por ano (28% off)</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">PWA</div>
+          <div class="hero-stat-label">instala no celular</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-capy">
+      <img src="https://i.imgur.com/placeholder.png" alt="Capivara segurando dinheiro" id="capy-img" onerror="this.style.display='none'">
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE O APP -->
+<section style="padding: 80px 5%; background: var(--white);">
+  <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
+    <div>
+      <div class="section-label">O que é</div>
+      <h2 style="font-size: clamp(28px, 4vw, 46px); color: var(--dark); margin-bottom: 20px;">
+        De Bem com a<br><span style="color: var(--green);">Minha Grana</span>
+      </h2>
+      <p style="font-size: 17px; color: var(--muted); line-height: 1.8; margin-bottom: 16px;">
+        É um app de controle financeiro pessoal feito pra quem quer entender de verdade pra onde o dinheiro vai — sem precisar vincular banco, sem complicação e sem precisar ser expert em finanças.
+      </p>
+      <p style="font-size: 17px; color: var(--muted); line-height: 1.8; margin-bottom: 28px;">
+        Você lança seus gastos e receitas, e o app faz o resto: gráficos, alertas, cálculo de dívidas, metas, contas fixas — tudo num só lugar, acessível de qualquer dispositivo.
+      </p>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 18px;">📱</div>
+          <div>
+            <div style="font-size: 13px; font-weight: 500; color: var(--dark);">Instala no celular</div>
+            <div style="font-size: 12px; color: var(--muted);">sem app store</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 18px;">☁️</div>
+          <div>
+            <div style="font-size: 13px; font-weight: 500; color: var(--dark);">Dados na nuvem</div>
+            <div style="font-size: 12px; color: var(--muted);">em qualquer dispositivo</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 18px;">🔒</div>
+          <div>
+            <div style="font-size: 13px; font-weight: 500; color: var(--dark);">Sem vincular banco</div>
+            <div style="font-size: 12px; color: var(--muted);">100% privado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="background: var(--dark2); border-radius: 24px; padding: 36px 32px;">
+      <div style="font-size: 12px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 24px;">Por que manual é melhor?</div>
+      <div style="display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(107,158,82,0.2); color: #9fd47e; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-top: 2px;">1</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 4px;">Você tem consciência real</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6;">Quem lança manualmente gasta menos. Simples assim — o ato de registrar já muda o comportamento.</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(107,158,82,0.2); color: #9fd47e; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-top: 2px;">2</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 4px;">Funciona pra qualquer banco</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6;">Nubank, Itaú, Bradesco, dinheiro vivo, PIX, envelope — tanto faz. Se você movimentou, você lança.</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(107,158,82,0.2); color: #9fd47e; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-top: 2px;">3</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 4px;">Importa quando quiser</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6;">Prefere importar o extrato do banco em CSV ou Excel? Também funciona. Você escolhe o jeito.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOR -->
+<section class="pain">
+  <div class="pain-inner">
+    <h2>Se identificou com algum desses?</h2>
+    <p class="pain-sub">Não tem vergonha não — a maioria do Brasil passa por isso.</p>
+    <div class="pain-cards">
+      <div class="pain-card">
+        <div class="pain-icon">😰</div>
+        <h3>Dívidas que só crescem</h3>
+        <p>Parece que por mais que você pague, a dívida não diminui. Os juros comem tudo e você fica rodando em círculo.</p>
+        <div class="arrow">→</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🤔</div>
+        <h3>Dinheiro some sem explicação</h3>
+        <p>Chegou o fim do mês e você não faz ideia onde foi parar o seu salário. Todo mês a mesma história.</p>
+        <div class="arrow">→</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">📊</div>
+        <h3>Planilha complexa demais</h3>
+        <p>Criou aquela planilha super elaborada no Excel… e abandonou na segunda semana. Era simples demais ou complexo demais.</p>
+        <div class="arrow">→</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="funcionalidades">
+  <div class="features-inner">
+    <div class="section-label">Funcionalidades</div>
+    <h2>Tudo que você precisa, nada que você não usa</h2>
+    <div class="features-grid">
+      <div class="feat">
+        <div class="feat-num">01</div>
+        <h3>Dívidas com juros automático</h3>
+        <p>Lançou a dívida uma vez. O app calcula os juros todo mês automaticamente. Você vê o rombo real e sabe exatamente o que precisa quitar.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-num">02</div>
+        <h3>Orçamento por categoria</h3>
+        <p>Define quanto pode gastar em mercado, lazer, transporte. O app avisa antes de você estourar — não depois.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-num">03</div>
+        <h3>Metas com data limite</h3>
+        <p>Quer guardar pra viagem, reserva de emergência ou trocar de celular? Cria a meta, define a data e acompanha o progresso.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-num">04</div>
+        <h3>Contas fixas e custo de vida</h3>
+        <p>Cadastra aluguel, streaming, academia. O app calcula seu custo de vida real e mostra quanto sobra de verdade.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-num">05</div>
+        <h3>Importação CSV e Excel</h3>
+        <p>Tem tudo numa planilha? Importa em segundos. Funciona com extratos bancários exportados do seu internet banking.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-num">06</div>
+        <h3>Funciona em qualquer dispositivo</h3>
+        <p>Instala no celular como app (PWA), sem precisar de loja. Abre no computador, tablet ou qualquer navegador. Dados na nuvem, sempre sincronizados.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PÚBLICOS -->
+<section class="audience" id="para-voce">
+  <div class="audience-inner">
+    <div class="section-label">Para quem é</div>
+    <h2>Feito pra quem se vira no dia a dia</h2>
+    <div class="audience-tabs">
+      <button class="tab-btn active" onclick="showTab('dividas')">Estou endividado</button>
+      <button class="tab-btn" onclick="showTab('zerinho')">Quero começar do zero</button>
+      <button class="tab-btn" onclick="showTab('planilha')">Uso planilha hoje</button>
+    </div>
+
+    <div class="tab-content active" id="tab-dividas">
+      <div class="tab-text">
+        <h3>Chega de juros te engolindo</h3>
+        <p>O maior problema de quem está endividado é não enxergar o tamanho real do buraco. Com o De Bem com a Minha Grana você coloca tudo na mesa — e começa a sair.</p>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Calcula os juros automaticamente todo mês</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Mostra qual dívida custa mais caro primeiro</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Alerta quando o orçamento aperta</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Cria metas de quitação com prazo real</span></div>
+      </div>
+      <div class="tab-visual">
+        <div class="tab-visual-title">Suas dívidas hoje</div>
+        <div class="mock-item"><span class="mock-label">Cartão Nubank</span><span class="mock-val neg">– R$2.340</span></div>
+        <div class="mock-item"><span class="mock-label">Empréstimo pessoal</span><span class="mock-val neg">– R$8.700</span></div>
+        <div class="mock-item"><span class="mock-label">Juros acumulados</span><span class="mock-val warn">+ R$1.123</span></div>
+        <div class="mock-item"><span class="mock-label">Total real da dívida</span><span class="mock-val neg">– R$12.163</span></div>
+        <div class="mock-bar-wrap">
+          <div class="mock-bar-label"><span>Meta de quitação</span><span>37%</span></div>
+          <div class="mock-bar-track"><div class="mock-bar-fill" style="width:37%;background:var(--caramel)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-zerinho">
+      <div class="tab-text">
+        <h3>Começar é mais fácil do que parece</h3>
+        <p>Não precisa saber nada de finanças. Começa lançando o que gasta no dia a dia e o app te mostra o caminho naturalmente.</p>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Interface simples, sem termos complicados</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Gráficos que mostram onde o dinheiro vai</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Notificações que lembram de lançar</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Cancela quando quiser, sem burocracia</span></div>
+      </div>
+      <div class="tab-visual">
+        <div class="tab-visual-title">Seu resumo do mês</div>
+        <div class="mock-item"><span class="mock-label">Receita total</span><span class="mock-val pos">+ R$3.200</span></div>
+        <div class="mock-item"><span class="mock-label">Gastos fixos</span><span class="mock-val neg">– R$1.450</span></div>
+        <div class="mock-item"><span class="mock-label">Gastos variáveis</span><span class="mock-val neg">– R$780</span></div>
+        <div class="mock-item"><span class="mock-label">Sobrou este mês</span><span class="mock-val pos">+ R$970 ✓</span></div>
+        <div class="mock-bar-wrap">
+          <div class="mock-bar-label"><span>Alimentação (orçamento)</span><span>68%</span></div>
+          <div class="mock-bar-track"><div class="mock-bar-fill" style="width:68%;background:#6B9E52"></div></div>
+          <div class="mock-bar-label"><span>Lazer (orçamento)</span><span>91%</span></div>
+          <div class="mock-bar-track"><div class="mock-bar-fill" style="width:91%;background:var(--caramel)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-planilha">
+      <div class="tab-text">
+        <h3>Sua planilha virou um app de verdade</h3>
+        <p>Se você já controla no Excel ou Google Sheets, você já entende de finanças. Agora imagina isso no celular, com gráficos automáticos e alertas.</p>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Importa seu Excel ou CSV em segundos</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Gráficos automáticos sem fórmula nenhuma</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Acessa do celular, tablet e computador</span></div>
+        <div class="tab-feature"><div class="tab-feature-dot"></div><span>Exporta relatório em CSV quando quiser</span></div>
+      </div>
+      <div class="tab-visual">
+        <div class="tab-visual-title">Importação concluída</div>
+        <div class="mock-item"><span class="mock-label">Arquivo importado</span><span class="mock-val pos">✓ gastos_maio.xlsx</span></div>
+        <div class="mock-item"><span class="mock-label">Lançamentos importados</span><span class="mock-val pos">127 itens</span></div>
+        <div class="mock-item"><span class="mock-label">Categorias detectadas</span><span class="mock-val pos">8 categorias</span></div>
+        <div class="mock-item"><span class="mock-label">Tempo gasto</span><span class="mock-val pos">12 segundos</span></div>
+        <div class="mock-bar-wrap">
+          <div class="mock-bar-label"><span>Dados processados</span><span>100%</span></div>
+          <div class="mock-bar-track"><div class="mock-bar-fill" style="width:100%;background:#6B9E52"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANOS -->
+<section class="pricing" id="planos">
+  <div class="pricing-inner">
+    <div class="section-label" style="text-align:center">Planos</div>
+    <h2>Sem surpresa no bolso</h2>
+    <p class="pricing-sub">Tudo incluso. Sem taxas escondidas.</p>
+    <div class="plans">
+      <div class="plan-card featured">
+        <div class="plan-badge">🐾 Plano Capivara $</div>
+        <div class="plan-name">Plano Capivara $</div>
+        <div class="plan-price">R$19,90<sub>/mês</sub></div>
+        <div class="plan-annual">ou R$167/ano — economize 28% (R$13,90/mês)</div>
+        <div class="plan-divider"></div>
+        <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Lançamentos ilimitados</div>
+        <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Gráficos e relatórios completos</div>
+        <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Metas com data limite</div>
+        <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Orçamento por categoria com alertas</div>
+        <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Contas fixas + dívidas com juros automático</div>
+        <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Importação CSV e Excel</div>
+        <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Notificações inteligentes</div>
+        <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Suporte via WhatsApp</div>
+        <button class="plan-btn plan-btn-primary" onclick="abrirCheckout('mensal')">Quero o Plano Capivara $</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPY BANNER -->
+<section class="capy-banner">
+  <div class="capy-banner-inner">
+    <img src="https://i.imgur.com/placeholder.png" alt="Capivara financeira" id="capy-img2" onerror="this.style.display='none'">
+    <h2>Sua grana não vai se virar sozinha.<br>Mas você pode.</h2>
+    <p>Assina hoje e a capivara te ajuda a organizar tudo. Ela aprova.</p>
+    <button class="btn-primary" onclick="abrirCheckout('mensal')" style="font-size:17px;padding:18px 40px;border:none;cursor:pointer;">Quero começar agora</button>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="faq-inner">
+    <h2>Perguntas frequentes</h2>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Precisa vincular meu banco?</button>
+      <div class="faq-a">Não! O app é 100% manual — você lança o que gasta. Isso é proposital: pesquisas mostram que quem lança manualmente tem mais consciência dos gastos. Mas você pode importar extratos em CSV ou Excel direto do seu banco.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Meus dados ficam seguros?</button>
+      <div class="faq-a">Sim. Os dados ficam armazenados no Supabase, um banco de dados seguro na nuvem. Nenhuma informação é compartilhada com terceiros.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Como instalo no celular?</button>
+      <div class="faq-a">O app é um PWA (Progressive Web App). Você abre pelo navegador e clica em "Adicionar à tela inicial". Pronto — vira ícone no celular igual a um app normal, sem precisar de Play Store ou App Store.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Posso cancelar a qualquer momento?</button>
+      <div class="faq-a">Depende do plano. No plano mensal você cancela quando quiser e não é cobrado no mês seguinte. No plano anual você paga o ano inteiro adiantado — por isso o desconto de 28%. Não há reembolso proporcional, então escolha o anual quando tiver certeza que vai usar. Se tiver dúvida, começa pelo mensal.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Tem suporte?</button>
+      <div class="faq-a">Tem! Suporte direto via WhatsApp.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">De Bem com a Minha <span>Grana</span></div>
+  <div class="footer-sub">Dinheiro organizado, vida tranquila.</div>
+  <div class="footer-links">
+    <a href="#planos">Planos</a>
+    <a href="#funcionalidades">Funcionalidades</a>
+    <a href="https://wa.me/5511934121551" target="_blank">WhatsApp</a>
+    <a href="#" onclick="abrirPolitica('termos');return false;">Termos de Uso</a>
+    <a href="#" onclick="abrirPolitica('privacidade');return false;">Privacidade</a>
+    <a href="#" onclick="abrirPolitica('cancelamento');return false;">Cancelamento</a>
+  </div>
+  <div class="footer-bottom">© 2026 De Bem com a Minha Grana. Feito com carinho (e muito controle financeiro).</div>
+</footer>
+
+<!-- MODAL POLÍTICAS -->
+<div id="modal-politica" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:20px;padding:40px 36px;width:100%;max-width:700px;position:relative;">
+    <button onclick="fecharPolitica()" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:26px;cursor:pointer;color:#5a6e54;line-height:1;">×</button>
+    <div id="politica-conteudo"></div>
+  </div>
+</div>
+
+<script>
+const politicas = {
+  termos: `
+    <h2 style="font-family:'Roboto',sans-serif;font-size:22px;font-weight:700;color:#1c2b18;margin-bottom:8px;">Termos de Uso</h2>
+    <p style="font-size:13px;color:#5a6e54;margin-bottom:24px;">Última atualização: março de 2026</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">1. Aceitação dos Termos</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Ao utilizar o aplicativo <strong>De Bem com a Minha Grana</strong>, você concorda com estes Termos de Uso. Se não concordar, não utilize o serviço.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">2. Descrição do Serviço</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O De Bem com a Minha Grana é um aplicativo de controle financeiro pessoal que permite registrar receitas, despesas, metas, dívidas e contas fixas. O aplicativo não realiza movimentações bancárias, não tem acesso a contas bancárias e não é uma instituição financeira.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">3. Plano e Cobrança</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O serviço é oferecido mediante assinatura. O <strong>Plano Capivara $</strong> está disponível nas modalidades mensal (R$19,90/mês) e anual (R$167,00/ano). A cobrança é processada pelo Asaas, plataforma de pagamentos homologada pelo Banco Central do Brasil. O acesso é liberado automaticamente após a confirmação do pagamento.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">4. Responsabilidades do Usuário</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O usuário é responsável pela veracidade dos dados cadastrados, pela guarda de sua senha de acesso e pelo uso adequado da plataforma. É proibido utilizar o serviço para fins ilegais ou em desacordo com a legislação brasileira.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">5. Limitação de Responsabilidade</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O De Bem com a Minha Grana não se responsabiliza por decisões financeiras tomadas com base nas informações registradas no aplicativo. As funcionalidades são fornecidas "como estão", sem garantia de resultados financeiros específicos.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">6. Alterações nos Termos</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Estes termos podem ser alterados a qualquer momento. O usuário será notificado por e-mail em caso de alterações relevantes. O uso continuado do serviço após a notificação implica aceitação dos novos termos.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">7. Foro</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Fica eleito o foro da Comarca de São Paulo/SP para dirimir eventuais controvérsias decorrentes destes termos, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">8. Contato</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;">Dúvidas sobre estes termos: <a href="https://wa.me/5511934121551" style="color:#4a7538;">WhatsApp (11) 93412-1551</a></p>
+  `,
+
+  privacidade: `
+    <h2 style="font-family:'Roboto',sans-serif;font-size:22px;font-weight:700;color:#1c2b18;margin-bottom:8px;">Política de Privacidade</h2>
+    <p style="font-size:13px;color:#5a6e54;margin-bottom:24px;">Última atualização: março de 2026 — em conformidade com a LGPD (Lei 13.709/2018)</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">1. Dados que Coletamos</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Coletamos os seguintes dados para prestação do serviço:</p>
+    <ul style="font-size:14px;color:#3d3d3d;line-height:2;margin-bottom:12px;padding-left:20px;">
+      <li><strong>Cadastro:</strong> nome, e-mail e senha (armazenada de forma criptografada)</li>
+      <li><strong>Pagamento:</strong> CPF, processado pelo Asaas — não armazenamos dados de cartão</li>
+      <li><strong>Uso:</strong> lançamentos financeiros, metas, dívidas e demais dados inseridos pelo usuário</li>
+      <li><strong>Técnicos:</strong> foto de perfil (armazenada localmente no dispositivo)</li>
+    </ul>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">2. Como Usamos os Dados</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Seus dados são utilizados exclusivamente para: prestação do serviço contratado, envio de notificações relacionadas ao app, suporte ao cliente e cumprimento de obrigações legais. Não vendemos, alugamos ou compartilhamos seus dados com terceiros para fins comerciais.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">3. Compartilhamento de Dados</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Seus dados são compartilhados apenas com:</p>
+    <ul style="font-size:14px;color:#3d3d3d;line-height:2;margin-bottom:12px;padding-left:20px;">
+      <li><strong>Supabase</strong> (supabase.com) — banco de dados em nuvem onde seus dados são armazenados com segurança</li>
+      <li><strong>Asaas</strong> (asaas.com) — processamento de pagamentos, regulado pelo Banco Central</li>
+    </ul>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">4. Seus Direitos (LGPD)</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Você tem direito a: acessar seus dados, corrigir informações incorretas, solicitar a exclusão dos seus dados, revogar consentimento e obter informações sobre o compartilhamento. Para exercer qualquer direito, entre em contato pelo WhatsApp.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">5. Segurança</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Adotamos medidas técnicas de segurança, incluindo criptografia de senhas e comunicação via HTTPS. Nenhum sistema é 100% seguro, mas nos comprometemos a proteger seus dados com as melhores práticas disponíveis.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">6. Retenção de Dados</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Seus dados são mantidos enquanto sua conta estiver ativa. Após a exclusão da conta, os dados são removidos em até 30 dias, exceto quando a retenção for exigida por lei.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">7. Contato</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;">Encarregado de Dados (DPO): <a href="https://wa.me/5511934121551" style="color:#4a7538;">WhatsApp (11) 93412-1551</a></p>
+  `,
+
+  cancelamento: `
+    <h2 style="font-family:'Roboto',sans-serif;font-size:22px;font-weight:700;color:#1c2b18;margin-bottom:8px;">Política de Cancelamento e Reembolso</h2>
+    <p style="font-size:13px;color:#5a6e54;margin-bottom:24px;">Última atualização: março de 2026</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">1. Direito de Arrependimento</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Conforme o Art. 49 do Código de Defesa do Consumidor, você tem direito ao cancelamento e reembolso integral em até <strong>7 dias corridos</strong> a partir da data da primeira contratação, sem necessidade de justificativa. Para exercer esse direito, entre em contato pelo WhatsApp.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">2. Cancelamento do Plano Mensal</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O plano mensal pode ser cancelado a qualquer momento. O cancelamento interrompe a renovação automática na próxima cobrança. O acesso continua disponível até o fim do período já pago. Não há reembolso proporcional pelo período não utilizado após os 7 dias de arrependimento.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">3. Cancelamento do Plano Anual</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O plano anual é pago integralmente no momento da contratação. Após os 7 dias de arrependimento, não há reembolso proporcional pelo período restante. O acesso permanece ativo até o término do período anual contratado.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">4. Como Cancelar</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">O cancelamento pode ser solicitado de duas formas:</p>
+    <ul style="font-size:14px;color:#3d3d3d;line-height:2;margin-bottom:12px;padding-left:20px;">
+      <li>Diretamente no app em <strong>Meu perfil → Meu plano → Cancelar assinatura</strong></li>
+      <li>Via WhatsApp: <a href="https://wa.me/5511934121551" style="color:#4a7538;">(11) 93412-1551</a></li>
+    </ul>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">5. Prazo de Reembolso</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;margin-bottom:12px;">Reembolsos aprovados são processados em até <strong>10 dias úteis</strong> pelo mesmo meio de pagamento utilizado na contratação.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:#1c2b18;margin:20px 0 8px;">6. Contato</h3>
+    <p style="font-size:14px;color:#3d3d3d;line-height:1.8;">Para cancelamentos e reembolsos: <a href="https://wa.me/5511934121551" style="color:#4a7538;">WhatsApp (11) 93412-1551</a></p>
+  `
+};
+
+function abrirPolitica(tipo) {
+  document.getElementById('politica-conteudo').innerHTML = politicas[tipo];
+  document.getElementById('modal-politica').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharPolitica() {
+  document.getElementById('modal-politica').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal-politica').addEventListener('click', function(e) {
+  if (e.target === this) fecharPolitica();
+});
+</script>
+
+<!-- WhatsApp float -->
+<a class="whatsapp-float" href="https://wa.me/5511934121551" target="_blank" title="Fale comigo no WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+    <path d="M13 2C7.477 2 3 6.477 3 12c0 1.89.524 3.66 1.438 5.17L3 23l5.995-1.42A10 10 0 0 0 13 22c5.523 0 10-4.477 10-10S18.523 2 13 2Z" fill="white" fill-opacity=".15" stroke="white" stroke-width="1.5"/>
+    <path d="M9.5 9.5c.2-.5.7-1 1.2-1s1 .3 1.2.8l.6 1.5c.1.3 0 .7-.2 1l-.4.4c.5 1 1.4 1.9 2.4 2.4l.4-.4c.3-.2.7-.3 1-.2l1.5.6c.5.2.8.7.8 1.2s-.5 1-1 1.2c-2.5 1-6-2.5-5-5Z" fill="white"/>
+  </svg>
+</a>
+
+<script>
+  function showTab(id) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  // Tenta carregar a imagem da capivara do upload
+  // Como é local, usa o placeholder — substituir pela URL real do mascote
+  // Para usar: hospedar a imagem e substituir o src
+
+  // Scroll reveal suave
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.pain-card, .feat, .plan-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease';
+    observer.observe(el);
+  });
+</script>
+<!-- MODAL CHECKOUT -->
+<div id="modal-checkout" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:460px;position:relative;max-height:90vh;overflow-y:auto;">
+    <button onclick="fecharCheckout()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#5a6e54;">×</button>
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-family:'Roboto',sans-serif;font-size:20px;font-weight:700;color:#1c2b18;margin-bottom:4px;">🐾 Plano Capivara $</div>
+      <div id="checkout-preco" style="font-size:32px;font-weight:700;color:#4a7538;font-family:'Roboto',sans-serif;">R$19,90<span style="font-size:14px;font-weight:400;color:#5a6e54;">/mês</span></div>
+    </div>
+
+    <!-- TOGGLE MENSAL/ANUAL -->
+    <div style="display:flex;gap:8px;margin-bottom:24px;background:#f4f9f1;border-radius:40px;padding:4px;">
+      <button id="btn-mensal" onclick="selecionarPlano('mensal')" style="flex:1;padding:10px;border-radius:40px;border:none;cursor:pointer;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;background:#6B9E52;color:#fff;transition:all .2s;">Mensal — R$19,90</button>
+      <button id="btn-anual" onclick="selecionarPlano('anual')" style="flex:1;padding:10px;border-radius:40px;border:none;cursor:pointer;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;background:transparent;color:#5a6e54;transition:all .2s;">Anual — R$167 <span style="font-size:11px;background:#e8f2e2;color:#3B6D11;padding:2px 6px;border-radius:10px;">28% off</span></button>
+    </div>
+
+    <div id="checkout-erro" style="display:none;background:#FDEEEC;border-radius:8px;padding:10px 14px;font-size:13px;color:#C0392B;margin-bottom:16px;"></div>
+
+    <div style="margin-bottom:14px;">
+      <label style="font-size:13px;font-weight:500;color:#5a6e54;display:block;margin-bottom:6px;">Nome completo</label>
+      <input type="text" id="co-nome" placeholder="Seu nome completo" style="width:100%;border:1px solid #D1E4C6;border-radius:8px;padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;color:#1c2b18;">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:13px;font-weight:500;color:#5a6e54;display:block;margin-bottom:6px;">E-mail</label>
+      <input type="email" id="co-email" placeholder="seu@email.com" style="width:100%;border:1px solid #D1E4C6;border-radius:8px;padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;color:#1c2b18;">
+    </div>
+    <div style="margin-bottom:24px;">
+      <label style="font-size:13px;font-weight:500;color:#5a6e54;display:block;margin-bottom:6px;">CPF</label>
+      <input type="text" id="co-cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" style="width:100%;border:1px solid #D1E4C6;border-radius:8px;padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;color:#1c2b18;">
+    </div>
+
+    <button id="btn-pagar" onclick="processarPagamento()" style="width:100%;background:#6B9E52;color:#fff;border:none;border-radius:40px;padding:16px;font-size:16px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .2s;">
+      Gerar link de pagamento
+    </button>
+    <div style="text-align:center;margin-top:12px;font-size:12px;color:#5a6e54;">
+      Você será redirecionado para pagar via cartão, PIX ou boleto
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_FUNC_URL = 'https://yddczdfgejmbqbqmcaus.supabase.co/functions/v1/criar-cobranca';
+  let planoSelecionado = 'mensal';
+
+  function abrirCheckout(plano) {
+    planoSelecionado = plano || 'mensal';
+    selecionarPlano(planoSelecionado);
+    document.getElementById('modal-checkout').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function fecharCheckout() {
+    document.getElementById('modal-checkout').style.display = 'none';
+    document.body.style.overflow = '';
+    document.getElementById('checkout-erro').style.display = 'none';
+    document.getElementById('btn-pagar').textContent = 'Gerar link de pagamento';
+    document.getElementById('btn-pagar').disabled = false;
+  }
+
+  function selecionarPlano(plano) {
+    planoSelecionado = plano;
+    const btnMensal = document.getElementById('btn-mensal');
+    const btnAnual = document.getElementById('btn-anual');
+    const preco = document.getElementById('checkout-preco');
+    if (plano === 'mensal') {
+      btnMensal.style.background = '#6B9E52'; btnMensal.style.color = '#fff';
+      btnAnual.style.background = 'transparent'; btnAnual.style.color = '#5a6e54';
+      preco.innerHTML = 'R$19,90<span style="font-size:14px;font-weight:400;color:#5a6e54;">/mês</span>';
+    } else {
+      btnAnual.style.background = '#6B9E52'; btnAnual.style.color = '#fff';
+      btnMensal.style.background = 'transparent'; btnMensal.style.color = '#5a6e54';
+      preco.innerHTML = 'R$167<span style="font-size:14px;font-weight:400;color:#5a6e54;">/ano</span>';
+    }
+  }
+
+  function mascaraCPF(input) {
+    let v = input.value.replace(/\D/g, '');
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    input.value = v;
+  }
+
+  async function processarPagamento() {
+    const nome = document.getElementById('co-nome').value.trim();
+    const email = document.getElementById('co-email').value.trim();
+    const cpf = document.getElementById('co-cpf').value.replace(/\D/g, '');
+    const erro = document.getElementById('checkout-erro');
+    const btn = document.getElementById('btn-pagar');
+
+    erro.style.display = 'none';
+
+    if (!nome || !email || !cpf) {
+      erro.textContent = 'Preencha todos os campos.';
+      erro.style.display = 'block'; return;
+    }
+    if (cpf.length !== 11) {
+      erro.textContent = 'CPF inválido. Digite os 11 dígitos.';
+      erro.style.display = 'block'; return;
+    }
+    if (!email.includes('@')) {
+      erro.textContent = 'E-mail inválido.';
+      erro.style.display = 'block'; return;
+    }
+
+    btn.textContent = 'Aguarde...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(SUPABASE_FUNC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, cpf, plano: planoSelecionado })
+      });
+      const data = await res.json();
+
+      if (data.success && data.linkPagamento) {
+        fecharCheckout();
+        window.open(data.linkPagamento, '_blank');
+      } else {
+        erro.textContent = 'Erro ao gerar cobrança: ' + (data.erro || 'tente novamente.');
+        erro.style.display = 'block';
+        btn.textContent = 'Gerar link de pagamento';
+        btn.disabled = false;
+      }
+    } catch (e) {
+      erro.textContent = 'Erro de conexão. Tente novamente.';
+      erro.style.display = 'block';
+      btn.textContent = 'Gerar link de pagamento';
+      btn.disabled = false;
+    }
+  }
+
+  // Fecha modal clicando fora
+  document.getElementById('modal-checkout').addEventListener('click', function(e) {
+    if (e.target === this) fecharCheckout();
+  });
+</script>
+</body>
+</html>
