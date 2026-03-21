@@ -587,32 +587,7 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
     <div id="register-success" class="auth-success"></div>
     <div class="field"><label>Nome completo</label><input type="text" id="reg-nome" placeholder="Seu nome" /></div>
     <div class="field">
-      <label>Tipo de conta</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
-        <div id="tipo-pf-btn" onclick="selecionarTipo('pf')" style="border:2px solid var(--accent);border-radius:var(--radius-sm);padding:12px;text-align:center;cursor:pointer;background:var(--green-bg)">
-          <div style="font-size:22px;margin-bottom:4px">🏠</div>
-          <div style="font-size:13px;font-weight:700;color:var(--accent)">Pessoal</div>
-          <div style="font-size:11px;color:var(--muted)">Para você</div>
-        </div>
-        <div id="tipo-pj-btn" onclick="selecionarTipo('pj')" style="border:2px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;cursor:pointer">
-          <div style="font-size:22px;margin-bottom:4px">🏢</div>
-          <div style="font-size:13px;font-weight:700;color:var(--muted)">Negócio</div>
-          <div style="font-size:11px;color:var(--muted)">MEI, empresa</div>
-        </div>
-      </div>
       <input type="hidden" id="reg-tipo" value="pf" />
-    </div>
-    <div id="campo-empresa" style="display:none">
-      <div class="field"><label>Nome do negócio</label><input type="text" id="reg-empresa" placeholder="Ex: Maria Doces, João Serviços" /></div>
-      <div class="field"><label>Tipo</label>
-        <select id="reg-tipo-empresa" style="width:100%;font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;">
-          <option value="MEI">MEI</option>
-          <option value="ME">ME (Microempresa)</option>
-          <option value="autonomo">Autônomo / Freelancer</option>
-          <option value="ltda">LTDA</option>
-          <option value="outro">Outro</option>
-        </select>
-      </div>
     </div>
     <div class="field"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com" /></div>
     <div class="field"><label>Senha</label><input type="password" id="reg-senha" placeholder="Mínimo 6 caracteres" /></div>
