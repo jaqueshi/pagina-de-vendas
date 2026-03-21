@@ -642,6 +642,7 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
           <div class="dd-theme-toggle"><span>🌙 Tema escuro</span><label class="theme-switch"><input type="checkbox" id="dark-toggle" onchange="toggleDark(this.checked)"><span class="theme-slider"></span></label></div>
           <div class="dd-sep"></div>
           <button class="dd-item" onclick="openModal('perfil');closeDropdown()"><span class="dd-icon">👤</span> Meu perfil</button>
+          <button class="dd-item" onclick="openModal('moeda');abrirModalMoeda();closeDropdown()"><span class="dd-icon">💱</span> Moeda</button>
           <button class="dd-item" onclick="openModal('import');closeDropdown()"><span class="dd-icon">📥</span> Importar planilha</button>
           <button class="dd-item" onclick="openModal('senha');closeDropdown()"><span class="dd-icon">🔑</span> Alterar senha</button>
           <button class="dd-item" onclick="openModal('plano');closeDropdown()"><span class="dd-icon">📋</span> Meu plano</button>
@@ -757,6 +758,15 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
     <p>Em caso de dúvidas, entre em contato pelo WhatsApp. Estamos aqui para te ajudar! 🐾</p>
     <a class="btn-whatsapp" href="https://wa.me/5511934121551?text=Oi!%20Preciso%20de%20ajuda%20com%20o%20app" target="_blank">💬 Falar no WhatsApp</a>
     <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('ajuda')">Fechar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-moeda">
+  <div class="modal-box">
+    <h3>💱 Moeda</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Escolha a moeda exibida no app. Apenas a formatação muda — os valores não são convertidos.</p>
+    <div id="moeda-lista" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="modal-btns" style="margin-top:20px;"><button class="btn-cancel" onclick="closeModal('moeda')">Fechar</button></div>
   </div>
 </div>
 
@@ -1240,7 +1250,35 @@ function filterSelects(){
 
 // ===== RENDER =====
 const isMobile = () => window.innerWidth <= 600;
-const fmt=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const MOEDAS = [
+  { codigo:'BRL', simbolo:'R$', locale:'pt-BR', label:'Real Brasileiro (R$)' },
+  { codigo:'USD', simbolo:'$',  locale:'en-US', label:'Dólar Americano ($)' },
+  { codigo:'EUR', simbolo:'€',  locale:'pt-PT', label:'Euro (€)' },
+];
+let moedaAtual = JSON.parse(localStorage.getItem('moeda_cfg')||'null') || MOEDAS[0];
+const fmt = v => {
+  try { return v.toLocaleString(moedaAtual.locale,{style:'currency',currency:moedaAtual.codigo}); }
+  catch { return moedaAtual.simbolo+' '+v.toFixed(2); }
+};
+function abrirModalMoeda(){
+  const lista = document.getElementById('moeda-lista');
+  lista.innerHTML = MOEDAS.map(m=>`
+    <button onclick="selecionarMoeda('${m.codigo}')" style="
+      display:flex;align-items:center;justify-content:space-between;
+      background:${m.codigo===moedaAtual.codigo?'var(--green-bg)':'var(--surface)'};
+      border:1px solid ${m.codigo===moedaAtual.codigo?'var(--accent)':'var(--border)'};
+      border-radius:8px;padding:12px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;
+      font-size:14px;color:var(--text);text-align:left;">
+      <span>${m.label}</span>
+      ${m.codigo===moedaAtual.codigo?'<span style="color:var(--accent);font-weight:700">✓</span>':''}
+    </button>`).join('');
+}
+function selecionarMoeda(codigo){
+  moedaAtual = MOEDAS.find(m=>m.codigo===codigo)||MOEDAS[0];
+  localStorage.setItem('moeda_cfg', JSON.stringify(moedaAtual));
+  abrirModalMoeda();
+  render();
+}
 const fmtData=d=>d?new Date(d+'T12:00:00').toLocaleDateString('pt-BR'):'—';
 let chartPizza=null,chartBarras=null;
 
