@@ -709,6 +709,23 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
     <div id="perfil-nome-ok" style="display:none;font-size:13px;color:var(--green);margin-top:-8px;margin-bottom:8px">✅ Nome atualizado!</div>
     <div class="field"><label>E-mail</label><input type="email" id="perfil-email" readonly style="background:var(--surface2)" /></div>
     <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('perfil')">Fechar</button></div>
+    <div style="margin-top:28px;border-top:1px solid var(--border);padding-top:14px;text-align:center;">
+      <button onclick="confirmarLimparDados()" style="background:none;border:none;font-size:11px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;opacity:.6;">Apagar todos os meus dados financeiros</button>
+    </div>
+  </div>
+
+  <!-- Modal confirmar limpar dados -->
+  <div class="modal-overlay" id="modal-limpar" style="z-index:1100;">
+    <div class="modal" style="max-width:360px;">
+      <h3 style="color:var(--red);">⚠️ Apagar dados financeiros?</h3>
+      <p style="font-size:14px;color:var(--muted);margin:14px 0 10px;">Isso apaga <strong>todos os lançamentos, metas, orçamentos, contas fixas e dívidas</strong>.<br><br>Sua conta, e-mail e senha ficam intactos.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Digite <strong>APAGAR</strong> para confirmar:</p>
+      <input type="text" id="input-confirmar-limpar" placeholder="APAGAR" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;color:var(--text);background:var(--bg);margin-bottom:16px;">
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal('limpar');document.getElementById('input-confirmar-limpar').value=''">Cancelar</button>
+        <button onclick="executarLimparDados()" style="background:var(--red);color:#fff;border:none;border-radius:40px;padding:10px 22px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">Apagar tudo</button>
+      </div>
+    </div>
   </div>
 </div>
 <div class="modal-overlay" id="modal-senha">
@@ -1011,6 +1028,31 @@ function doLogout(){
   showScreen('login');
   document.getElementById('login-email').value='';
   document.getElementById('login-senha').value='';
+}
+
+function confirmarLimparDados(){
+  closeModal('perfil');
+  document.getElementById('input-confirmar-limpar').value='';
+  openModal('limpar');
+}
+
+async function executarLimparDados(){
+  const input=document.getElementById('input-confirmar-limpar').value.trim();
+  if(input!=='APAGAR'){
+    document.getElementById('input-confirmar-limpar').style.borderColor='var(--red)';
+    return;
+  }
+  const session=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}');
+  if(!session.email) return;
+  try{
+    state=defaultState();
+    await SUPA.from('usuarios').update({dados:{}}).eq('email',session.email);
+    closeModal('limpar');
+    render();
+    alert('✅ Dados financeiros apagados com sucesso.');
+  } catch(e){
+    alert('Erro ao apagar dados. Tente novamente.');
+  }
 }
 
 async function openApp(email, nome, dados){
@@ -1976,7 +2018,7 @@ function handleImportFile(file){
       if(ext==='csv'){
         const text=e.target.result;
         const lines=text.split(/\r?\n/).filter(l=>l.trim());
-        // Pular linhas de cabeçalho e resumo
+        // Formato exportado pelo app: Descrição,Categoria,Tipo,Data,Valor
         rows=lines.filter(l=>{
           const cols=l.split(',');
           return cols.length>=4 && cols[2] && (cols[2].includes('Receita')||cols[2].includes('Despesa'));
@@ -1988,14 +2030,70 @@ function handleImportFile(file){
         const wb=XLSX.read(e.target.result,{type:'array'});
         const ws=wb.Sheets[wb.SheetNames[0]];
         const data=XLSX.utils.sheet_to_json(ws,{header:1});
-        rows=data.filter(r=>r.length>=4&&(r[2]==='Receita'||r[2]==='Despesa')).map(r=>({
+
+        // Tenta formato exportado pelo app: col[2] = 'Receita' ou 'Despesa'
+        const appRows=data.filter(r=>r.length>=4&&(r[2]==='Receita'||r[2]==='Despesa')).map(r=>({
           desc:String(r[0]||''),cat:String(r[1]||'Outros'),tipo:r[2]==='Receita'?'receita':'despesa',
           data:parseDataBR(String(r[3]||'')),val:parseFloat(String(r[4]||'0').replace(',','.'))||0
         }));
+
+        if(appRows.length>0){
+          rows=appRows;
+        } else {
+          // Tenta formato genérico: acha cabeçalho com "data","descrição","valor"
+          let headerIdx=-1;
+          let colData=-1,colDesc=-1,colVal=-1,colSalario=-1;
+          data.forEach((r,i)=>{
+            const row=r.map(c=>String(c||'').toLowerCase().trim());
+            if(row.some(c=>c.includes('descriç')||c.includes('descri'))){
+              headerIdx=i;
+              row.forEach((c,j)=>{
+                if(c.includes('data')) colData=j;
+                else if(c.includes('descriç')||c.includes('descri')||c==='o que foi') colDesc=j;
+                else if(c.includes('valor')) colVal=j;
+              });
+            }
+          });
+
+          // Fallback: tenta detectar colunas pela posição (data, desc, valor)
+          if(headerIdx===-1){
+            data.forEach((r,i)=>{
+              const row=r.map(c=>String(c||'').toLowerCase().trim());
+              if(row.some(c=>c==='data'||c==='dt')){
+                headerIdx=i;
+                row.forEach((c,j)=>{
+                  if(c==='data'||c==='dt') colData=j;
+                  else if(c.includes('descri')||c==='item'||c==='o que foi') colDesc=j;
+                  else if(c==='valor'||c==='vl'||c==='r$') colVal=j;
+                });
+              }
+            });
+          }
+
+          if(headerIdx>=0 && colDesc>=0 && colVal>=0){
+            data.slice(headerIdx+1).forEach(r=>{
+              if(!r || r.length===0) return;
+              const desc=String(r[colDesc]||'').trim();
+              const rawVal=String(r[colVal]||'').replace('R$','').replace(/\./g,'').replace(',','.').trim();
+              const val=parseFloat(rawVal)||0;
+              if(!desc || val<=0) return;
+              const rawData=colData>=0?String(r[colData]||''):'';
+              // Identifica receita se desc contiver palavras-chave
+              const isRec=/salario|salário|renda|receita|entrada|bico|freelance|pagamento recebido/i.test(desc);
+              rows.push({
+                desc,
+                cat:'Outros',
+                tipo:isRec?'receita':'despesa',
+                data:parseDataBR(rawData),
+                val
+              });
+            });
+          }
+        }
       }
 
       rows=rows.filter(r=>r.desc&&r.val>0);
-      if(rows.length===0){ alert('Nenhum lançamento válido encontrado. Verifique se o arquivo foi exportado pelo app.'); return; }
+      if(rows.length===0){ alert('Nenhum lançamento válido encontrado.\n\nPara planilhas genéricas, o app precisa identificar as colunas de data, descrição e valor. Verifique se sua planilha tem um cabeçalho com esses nomes.'); return; }
 
       importDados=rows;
       const rec=rows.filter(r=>r.tipo==='receita').reduce((a,r)=>a+r.val,0);
@@ -2005,7 +2103,6 @@ function handleImportFile(file){
       document.getElementById('imp-desp').textContent=fmt(desp);
       document.getElementById('import-preview').style.display='block';
 
-      // Se não tem dados, importar direto
       if(state.lancamentos.length===0){
         document.getElementById('import-msg').textContent='Nenhum dado existente. Clique em "Adicionar" para importar.';
         document.getElementById('import-msg').style.display='block';
