@@ -709,28 +709,6 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
     <div id="perfil-nome-ok" style="display:none;font-size:13px;color:var(--green);margin-top:-8px;margin-bottom:8px">✅ Nome atualizado!</div>
     <div class="field"><label>E-mail</label><input type="email" id="perfil-email" readonly style="background:var(--surface2)" /></div>
     <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('perfil')">Fechar</button></div>
-
-    <!-- Zona perigosa — discreta -->
-    <div style="margin-top:32px;border-top:1px solid var(--border);padding-top:16px;">
-      <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Zona de risco</p>
-      <button onclick="confirmarLimparDados()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;" onmouseover="this.style.borderColor='#c0392b';this.style.color='#c0392b'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-        Limpar todos os meus dados
-      </button>
-    </div>
-  </div>
-
-  <!-- Modal confirmação limpar dados -->
-  <div class="modal-overlay" id="modal-limpar" style="z-index:1100;">
-    <div class="modal" style="max-width:380px;">
-      <h3 style="color:#c0392b;">⚠️ Limpar todos os dados?</h3>
-      <p style="font-size:14px;color:var(--muted);margin:16px 0;">Isso vai apagar <strong>todos os seus lançamentos, metas, orçamentos, contas fixas e dívidas</strong>. Essa ação não pode ser desfeita.</p>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Para confirmar, digite <strong>LIMPAR</strong> abaixo:</p>
-      <input type="text" id="input-confirmar-limpar" placeholder="Digite LIMPAR" style="width:100%;border:1px solid #c0392b;border-radius:8px;padding:10px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;color:var(--text);background:var(--bg);margin-bottom:16px;">
-      <div class="modal-btns">
-        <button class="btn-cancel" onclick="closeModal('limpar');document.getElementById('input-confirmar-limpar').value=''">Cancelar</button>
-        <button onclick="executarLimparDados()" style="background:#c0392b;color:#fff;border:none;border-radius:40px;padding:10px 22px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">Limpar tudo</button>
-      </div>
-    </div>
   </div>
 </div>
 <div class="modal-overlay" id="modal-senha">
@@ -1033,32 +1011,6 @@ function doLogout(){
   showScreen('login');
   document.getElementById('login-email').value='';
   document.getElementById('login-senha').value='';
-}
-
-function confirmarLimparDados(){
-  closeModal('perfil');
-  document.getElementById('input-confirmar-limpar').value='';
-  openModal('limpar');
-}
-
-async function executarLimparDados(){
-  const input = document.getElementById('input-confirmar-limpar').value.trim();
-  if(input !== 'LIMPAR'){
-    document.getElementById('input-confirmar-limpar').style.borderColor='#c0392b';
-    document.getElementById('input-confirmar-limpar').placeholder='Digite exatamente: LIMPAR';
-    return;
-  }
-  const session = JSON.parse(localStorage.getItem(SESSION_KEY)||'{}');
-  if(!session.email) return;
-  try{
-    await SUPA.from('usuarios').update({ dados: {} }).eq('email', session.email);
-    closeModal('limpar');
-    // Recarrega o app com dados zerados
-    await openApp(session.email, session.nome, {});
-    showToast && showToast('Todos os dados foram apagados.') || alert('Todos os dados foram apagados.');
-  } catch(e){
-    alert('Erro ao limpar dados. Tente novamente.');
-  }
 }
 
 async function openApp(email, nome, dados){
@@ -1426,7 +1378,8 @@ function renderOrc(){
     const pct=Math.min(Math.round(gasto/limite*100),100);
     const cls=pct>=100?'bar-over':pct>=80?'bar-warn':'bar-ok';
     const cor=pct>=100?'var(--red)':pct>=80?'var(--amber)':'var(--green)';
-    return `<div class="orc-card">
+    return `<div class="orc-card" style="position:relative">
+      <button class="btn-del" onclick="askDel(()=>delOrc('${cat}'))" style="position:absolute;top:10px;right:10px;font-size:16px;opacity:.5" title="Excluir orçamento">×</button>
       <div class="orc-header"><span class="orc-nome">${cat}</span><span class="orc-pct" style="color:${cor}">${pct}%</span></div>
       <div class="bar-bg"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
       <div class="orc-vals"><span>${fmt(gasto)} gastos</span><span>limite ${fmt(limite)}</span></div>
@@ -1550,7 +1503,10 @@ function renderRelatorio(){
   document.getElementById('rel').innerHTML=`
     <div class="rel-header">
       <div><p class="sec-title" style="margin-bottom:4px">Relatório — ${MESES[filterMes-1]} ${filterAno}</p><p style="font-size:13px;color:var(--muted)">Resumo completo do período</p></div>
-      <button class="btn-download" onclick="downloadCSV()">⬇ Baixar CSV</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-download" onclick="downloadCSV()">⬇ Baixar mês</button>
+        <button class="btn-download" onclick="downloadCSVAnual()" style="background:var(--green-dark)">⬇ Baixar ano ${filterAno}</button>
+      </div>
     </div>
     <div class="filter-row"><label>Período:</label>${filterSelects()}</div>
     <div class="rel-resumo">
@@ -1587,6 +1543,9 @@ function addOrc(){
   const val=parseFloat(document.getElementById('o-val').value);
   if(!val||val<=0) return;
   state.orcamentos[cat]=val;saveData();render();
+}
+function delOrc(cat){
+  delete state.orcamentos[cat];saveData();render();
 }
 function addMeta(){
   const nome=document.getElementById('m-nome').value.trim();
@@ -1646,6 +1605,36 @@ function downloadCSV(){
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;a.download=`relatorio_${MESES[filterMes-1]}_${filterAno}.csv`;a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadCSVAnual(){
+  const ano=filterAno;
+  let csv=`Relatório Anual — ${ano}\n\n`;
+  let recTotal=0, despTotal=0;
+  MESES.forEach((mes,idx)=>{
+    const m=idx+1;
+    const lancs=state.lancamentos.filter(l=>{
+      if(!l.data) return false;
+      const d=new Date(l.data+'T12:00:00');
+      return d.getFullYear()===ano && d.getMonth()+1===m;
+    });
+    if(!lancs.length) return;
+    const rec=lancs.filter(l=>l.tipo==='receita').reduce((a,l)=>a+l.val,0);
+    const desp=lancs.filter(l=>l.tipo==='despesa').reduce((a,l)=>a+l.val,0);
+    recTotal+=rec; despTotal+=desp;
+    csv+=`=== ${mes} ${ano} ===\nDescrição,Categoria,Tipo,Data,Valor\n`;
+    lancs.forEach(l=>{
+      const d=l.data?new Date(l.data+'T12:00:00').toLocaleDateString('pt-BR'):'—';
+      csv+=`"${l.desc}","${l.cat}","${l.tipo==='receita'?'Receita':'Despesa'}","${d}","${l.val.toFixed(2)}"\n`;
+    });
+    csv+=`Receitas do mês,,,,${rec.toFixed(2)}\nDespesas do mês,,,,${desp.toFixed(2)}\nSaldo do mês,,,,${(rec-desp).toFixed(2)}\n\n`;
+  });
+  csv+=`=== RESUMO ANUAL ${ano} ===\nTotal Receitas,,,,${recTotal.toFixed(2)}\nTotal Despesas,,,,${despTotal.toFixed(2)}\nSaldo do Ano,,,,${(recTotal-despTotal).toFixed(2)}\n`;
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`relatorio_anual_${ano}.csv`;a.click();
   URL.revokeObjectURL(url);
 }
 
