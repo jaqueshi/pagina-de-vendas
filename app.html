@@ -685,9 +685,9 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
 
 <!-- Modal Importação -->
 <div class="modal-overlay" id="modal-import">
-  <div class="modal-box" style="max-width:520px;max-height:92vh;overflow-y:auto">
-    <h3>📥 Importar planilha</h3>
-    <p style="margin-bottom:12px">Formatos aceitos: <strong>.csv</strong> e <strong>.xlsx</strong> (Excel)</p>
+  <div class="modal-box" style="max-width:480px;max-height:92vh;overflow-y:auto">
+    <h3>📥 Importar extrato bancário</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Importe o extrato exportado pelo seu banco em formato <strong>.csv</strong> ou <strong>.xlsx</strong>.</p>
 
     <!-- ETAPA 1: Drop zone -->
     <div id="imp-etapa-1">
@@ -695,69 +695,46 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
         ondragover="event.preventDefault();this.classList.add('drag')"
         ondragleave="this.classList.remove('drag')"
         ondrop="event.preventDefault();this.classList.remove('drag');handleImportFile(event.dataTransfer.files[0])">
-        <div class="imp-icon">📂</div>
-        <p>Clique aqui ou arraste o arquivo</p>
-        <small>CSV ou Excel (.xlsx) — qualquer formato</small>
+        <div class="imp-icon">🏦</div>
+        <p>Clique aqui ou arraste o extrato</p>
+        <small>CSV ou Excel exportado pelo banco</small>
       </div>
       <input type="file" id="import-file" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleImportFile(this.files[0])" />
+      <div style="margin-top:14px;background:var(--surface2);border-radius:var(--radius-sm);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6">
+        <strong style="color:var(--text);display:block;margin-bottom:4px">💡 Como exportar o extrato:</strong>
+        <b>Nubank:</b> App → Perfil → Exportar → CSV<br>
+        <b>Inter:</b> App → Extrato → Exportar → CSV<br>
+        <b>Itaú/Bradesco:</b> Internet banking → Extrato → Baixar CSV<br>
+        <b>Outros bancos:</b> Procure a opção "Exportar extrato" ou "Baixar CSV"
+      </div>
     </div>
 
-    <!-- ETAPA 2: Mapeamento de colunas -->
+    <!-- ETAPA 2: Prévia do resultado -->
     <div id="imp-etapa-2" style="display:none">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">
-        📋 Confira as colunas detectadas automaticamente. Ajuste se necessário:
-      </p>
-      <!-- Prévia das primeiras linhas -->
-      <div id="imp-tabela-wrap" style="overflow-x:auto;margin-bottom:14px;border:1px solid var(--border);border-radius:var(--radius-sm)">
-        <table id="imp-tabela" style="width:100%;border-collapse:collapse;font-size:12px"></table>
-      </div>
-      <!-- Seletores de colunas -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
-        <div class="field">
-          <label>Coluna — Descrição</label>
-          <select id="imp-col-desc" style="width:100%;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text)"></select>
-        </div>
-        <div class="field">
-          <label>Coluna — Valor (R$)</label>
-          <select id="imp-col-val" style="width:100%;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text)"></select>
-        </div>
-        <div class="field">
-          <label>Coluna — Data <span style="color:var(--muted)">(opcional)</span></label>
-          <select id="imp-col-data" style="width:100%;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text)"></select>
-        </div>
-        <div class="field">
-          <label>Coluna — Tipo <span style="color:var(--muted)">(opcional)</span></label>
-          <select id="imp-col-tipo" style="width:100%;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text)"></select>
-        </div>
-      </div>
-      <!-- Tipo padrão se não tiver coluna de tipo -->
-      <div class="field" style="margin-bottom:14px">
-        <label>Tipo padrão (quando não detectado pela coluna)</label>
-        <select id="imp-tipo-padrao" style="width:100%;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text)">
-          <option value="despesa">Despesa</option>
-          <option value="receita">Receita</option>
-        </select>
-      </div>
-      <button class="btn-add" onclick="processarComMapeamento()" style="width:100%;margin-bottom:10px">🔍 Processar com essas colunas</button>
-      <button class="btn-cancel" onclick="voltarEtapa1()" style="width:100%;font-size:13px">← Trocar arquivo</button>
-    </div>
-
-    <!-- ETAPA 3: Prévia do resultado -->
-    <div id="imp-etapa-3" style="display:none">
-      <div class="import-preview" id="import-preview" style="display:block">
+      <div id="imp-banco-badge" style="margin-bottom:12px"></div>
+      <div class="import-preview" style="display:block">
         <div class="imp-stat"><span>Lançamentos encontrados</span><strong id="imp-count">0</strong></div>
         <div class="imp-stat"><span>Receitas</span><strong id="imp-rec">R$ 0</strong></div>
         <div class="imp-stat"><span>Despesas</span><strong id="imp-desp">R$ 0</strong></div>
       </div>
-      <div id="import-msg" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
-      <div class="import-opcoes" id="import-opcoes" style="display:flex">
-        <button class="imp-btn-add" onclick="confirmarImport('add')">➕ Adicionar aos existentes</button>
-        <button class="imp-btn-sub" onclick="confirmarImport('replace')">🔄 Substituir tudo</button>
+      <div id="import-msg" style="font-size:13px;color:var(--muted);margin:12px 0"></div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <button class="imp-btn-add" onclick="confirmarImport('add')" style="flex:1">➕ Adicionar aos existentes</button>
+        <button class="imp-btn-sub" onclick="confirmarImport('replace')" style="flex:1">🔄 Substituir tudo</button>
       </div>
-      <button class="btn-cancel" onclick="voltarParaMapeamento()" style="width:100%;font-size:13px;margin-top:8px">⚙️ Resultado errado? Ajustar colunas</button>
+      <button class="btn-cancel" onclick="resetImport()" style="width:100%;font-size:13px">← Tentar outro arquivo</button>
     </div>
 
-    <div class="modal-btns" style="margin-top:8px">
+    <!-- ETAPA 3: Erro -->
+    <div id="imp-etapa-3" style="display:none">
+      <div style="background:var(--red-bg);border:1px solid #F5A89A;border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:14px">
+        <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:6px">⚠️ Não conseguimos ler esse arquivo</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5" id="imp-erro-msg">Verifique se o arquivo é um extrato exportado diretamente pelo banco em formato CSV ou Excel.</div>
+      </div>
+      <button class="btn-cancel" onclick="resetImport()" style="width:100%;font-size:13px">← Tentar outro arquivo</button>
+    </div>
+
+    <div class="modal-btns" style="margin-top:12px">
       <button class="btn-cancel" onclick="closeModal('import');resetImport()">Fechar</button>
     </div>
   </div>
@@ -1985,402 +1962,199 @@ async function excluirConta(){
   }
 }
 
-// ===== IMPORTAÇÃO =====
+// ===== IMPORTAÇÃO DE EXTRATO BANCÁRIO =====
 let importDados = [];
-let impMatrizRaw = []; // linhas brutas da planilha (achata todas as abas)
-let impColunas = [];   // nomes detectados das colunas
 
 function resetImport(){
-  importDados=[];
-  impMatrizRaw=[];
-  impColunas=[];
-  document.getElementById('import-file').value='';
-  document.getElementById('imp-etapa-1').style.display='block';
-  document.getElementById('imp-etapa-2').style.display='none';
-  document.getElementById('imp-etapa-3').style.display='none';
+  importDados = [];
+  document.getElementById('import-file').value = '';
+  document.getElementById('imp-etapa-1').style.display = 'block';
+  document.getElementById('imp-etapa-2').style.display = 'none';
+  document.getElementById('imp-etapa-3').style.display = 'none';
 }
 
-function voltarEtapa1(){
-  document.getElementById('imp-etapa-1').style.display='block';
-  document.getElementById('imp-etapa-2').style.display='none';
-  document.getElementById('imp-etapa-3').style.display='none';
-  document.getElementById('import-file').value='';
-  impMatrizRaw=[];
+// Detecta qual banco é pelo cabeçalho
+function detectarBanco(cabecalho){
+  const h = cabecalho.join(',').toLowerCase();
+  if(h.includes('identificador') && h.includes('descrição') && h.includes('valor')) return 'nubank';
+  if(h.includes('lançamento') && h.includes('valor') && h.includes('saldo')) return 'inter';
+  if(h.includes('histórico') && h.includes('valor')) return 'itau';
+  if(h.includes('data') && h.includes('histórico') && h.includes('docto')) return 'bradesco';
+  if(h.includes('data') && h.includes('descrição') && h.includes('valor')) return 'generico';
+  return null;
 }
 
-function voltarEtapa2(){
-  document.getElementById('imp-etapa-2').style.display='block';
-  document.getElementById('imp-etapa-3').style.display='none';
+// Lê CSV do Nubank: Data,Valor,Identificador,Descrição
+function lerNubank(linhas){
+  return linhas.slice(1).map(r=>{
+    const data = parseDataBR(r[0]||'');
+    const valor = parseFloat((r[1]||'0').replace(',','.'));
+    const desc = limparDescricao(r[3]||r[2]||'');
+    if(!desc||isNaN(valor)||valor===0) return null;
+    return {
+      desc,
+      cat: valor > 0 ? 'Salário' : 'Outros',
+      tipo: valor > 0 ? 'receita' : 'despesa',
+      data,
+      val: Math.abs(valor)
+    };
+  }).filter(Boolean);
 }
 
-function voltarParaMapeamento(){
-  // Se já temos a matriz carregada, vai direto pro mapeamento
-  if(impMatrizRaw&&impMatrizRaw.length>0){
-    mostrarMapeamento(impMatrizRaw);
-  } else {
-    voltarEtapa1();
-  }
-}
+// Lê extrato genérico: tenta detectar colunas de data, descrição e valor
+function lerGenerico(linhas){
+  if(linhas.length < 2) return [];
+  const cab = linhas[0];
+  const nCols = cab.length;
 
-// Mostra a etapa 2 com a prévia da tabela e selects de colunas
-function mostrarMapeamento(matriz){
-  impMatrizRaw = matriz;
-  document.getElementById('imp-etapa-1').style.display='none';
-  document.getElementById('imp-etapa-2').style.display='block';
-  document.getElementById('imp-etapa-3').style.display='none';
-
-  // Pega até 6 linhas não vazias para prévia
-  const linhasValidas = matriz.filter(r=>r&&r.some(c=>c!==null&&c!==undefined&&String(c).trim()!=='')).slice(0,6);
-  const nCols = Math.max(...linhasValidas.map(r=>r.length), 1);
-
-  // Detecta automaticamente as colunas (reutiliza lógica do parser)
-  const scores = Array.from({length:nCols},()=>({txt:0,num:0,dt:0}));
-  linhasValidas.slice(0,20).forEach(r=>{
+  // Pontua cada coluna
+  const scores = Array.from({length:nCols}, ()=>({txt:0,num:0,dt:0}));
+  linhas.slice(1, Math.min(linhas.length, 30)).forEach(r=>{
     r.forEach((c,j)=>{
-      if(c===null||c===undefined||String(c).trim()==='') return;
-      if(extrairValor(c)>0) scores[j].num++;
-      if(detectarData(c)) scores[j].dt++;
-      const s=String(c).trim();
-      if(s.length>1 && isNaN(parseFloat(s.replace(/[,\.]/g,''))) && !detectarData(c)) scores[j].txt++;
+      if(!c&&c!==0) return;
+      const s = String(c).trim();
+      const v = parseFloat(s.replace(/[R$\s\.]/g,'').replace(',','.'));
+      if(!isNaN(v)&&v!==0) scores[j].num++;
+      if(parseDataBR(s)) scores[j].dt++;
+      if(s.length>2 && isNaN(v) && !parseDataBR(s)) scores[j].txt++;
     });
   });
-  let autoVal=-1,autoDesc=-1,autoData=-1,autoTipo=-1,maxN=0,maxT=0,maxD=0;
-  scores.forEach((s,j)=>{if(s.num>maxN){maxN=s.num;autoVal=j;}});
-  scores.forEach((s,j)=>{if(j!==autoVal&&s.txt>maxT){maxT=s.txt;autoDesc=j;}});
-  scores.forEach((s,j)=>{if(j!==autoVal&&j!==autoDesc&&s.dt>maxD){maxD=s.dt;if(s.dt>0)autoData=j;}});
-  // Tenta detectar coluna de tipo pelo cabeçalho
-  if(linhasValidas.length>0){
-    linhasValidas[0].forEach((c,j)=>{
-      if(/tipo|type|natureza|categ/i.test(String(c||''))) autoTipo=j;
-    });
-  }
 
-  // Monta nomes de colunas a partir da primeira linha se tiver cabeçalho, senão usa letras
-  const primeiraLinha = linhasValidas[0]||[];
-  const temCabecalho = primeiraLinha.some(c=>c&&isNaN(parseFloat(String(c).replace(/[,\.]/g,'')))||false);
-  impColunas = Array.from({length:nCols},(_,j)=>{
-    const v = primeiraLinha[j];
-    if(temCabecalho && v && String(v).trim()) return String(v).trim();
-    return String.fromCharCode(65+j); // A, B, C...
-  });
+  let colVal=-1, colDesc=-1, colData=-1, maxN=0, maxT=0, maxD=0;
+  scores.forEach((s,j)=>{if(s.num>maxN){maxN=s.num;colVal=j;}});
+  scores.forEach((s,j)=>{if(j!==colVal&&s.txt>maxT){maxT=s.txt;colDesc=j;}});
+  scores.forEach((s,j)=>{if(j!==colVal&&j!==colDesc&&s.dt>maxD){maxD=s.dt;if(s.dt>0)colData=j;}});
 
-  // Renderiza a tabela de prévia
-  const tabela = document.getElementById('imp-tabela');
-  const inicioLinha = temCabecalho ? 0 : 0;
-  let html = '<thead><tr style="background:var(--surface2)">';
-  impColunas.forEach((nome,j)=>{
-    html+=`<th style="padding:6px 10px;text-align:left;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap">${nome}</th>`;
-  });
-  html+='</tr></thead><tbody>';
-  linhasValidas.slice(inicioLinha).forEach((r,i)=>{
-    html+=`<tr style="${i%2===0?'':'background:var(--surface2)'}">`;
-    for(let j=0;j<nCols;j++){
-      const v = r[j]!==null&&r[j]!==undefined ? String(r[j]).trim() : '';
-      html+=`<td style="padding:5px 10px;font-size:12px;border-bottom:1px solid var(--border);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis">${v}</td>`;
+  if(colVal<0||colDesc<0) return [];
+
+  const IGNORAR = /^(total|subtotal|saldo|soma|balance|saldo final)$/i;
+  const RECEITA = /sal[aá]rio|renda|receita|entrada|pix recebido|transferência recebida|deposito|crédito|freelance|pagamento recebido/i;
+
+  return linhas.slice(1).map(r=>{
+    const desc = limparDescricao(String(r[colDesc]||'').trim());
+    const valBruto = parseFloat(String(r[colVal]||'0').replace(/[R$\s\.]/g,'').replace(',','.'));
+    const data = colData>=0 ? parseDataBR(String(r[colData]||'')) : '';
+    if(!desc||IGNORAR.test(desc)||isNaN(valBruto)||valBruto===0) return null;
+    const tipo = RECEITA.test(desc)||valBruto>0 ? 'receita' : 'despesa';
+    return { desc, cat: tipo==='receita'?'Salário':'Outros', tipo, data, val: Math.abs(valBruto) };
+  }).filter(Boolean);
+}
+
+// Limpa descrições longas de extrato (remove dados bancários)
+function limparDescricao(desc){
+  return desc
+    .replace(/•+\.?\d+[\-\d]*/g, '')           // remove CPF mascarado
+    .replace(/\b\d{5,}\b/g, '')                  // remove números longos
+    .replace(/agência:\s*\d+/gi, '')
+    .replace(/conta:\s*[\d\-]+/gi, '')
+    .replace(/\(\d{4}\)/g, '')                    // remove código banco
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+    .substring(0, 80);
+}
+
+function parseCsvRobusto(txt){
+  const linhas = txt.split(/\r?\n/).filter(l=>l.trim());
+  if(!linhas.length) return [];
+  const primeira = linhas[0];
+  const nSemi = (primeira.match(/;/g)||[]).length;
+  const nComma = (primeira.match(/,/g)||[]).length;
+  const nTab = (primeira.match(/\t/g)||[]).length;
+  let sep = ',';
+  if(nSemi>nComma&&nSemi>=nTab) sep=';';
+  else if(nTab>nComma&&nTab>nSemi) sep='\t';
+  return linhas.map(linha=>{
+    const campos=[]; let i=0,campo='',dentroAspas=false;
+    while(i<linha.length){
+      const c=linha[i];
+      if(c==='"'){if(dentroAspas&&linha[i+1]==='"'){campo+='"';i+=2;continue;}dentroAspas=!dentroAspas;}
+      else if(c===sep&&!dentroAspas){campos.push(campo.trim());campo='';}
+      else{campo+=c;}
+      i++;
     }
-    html+='</tr>';
+    campos.push(campo.trim());
+    return campos;
   });
-  html+='</tbody>';
-  tabela.innerHTML=html;
-
-  // Preenche os selects
-  const opcaoNenhuma = '<option value="-1">— nenhuma —</option>';
-  ['imp-col-desc','imp-col-val','imp-col-data','imp-col-tipo'].forEach(id=>{
-    const sel=document.getElementById(id);
-    sel.innerHTML=(id==='imp-col-desc'||id==='imp-col-val'?'':opcaoNenhuma)+
-      impColunas.map((n,j)=>`<option value="${j}">${n}</option>`).join('');
-  });
-  document.getElementById('imp-col-desc').value = autoDesc>=0?autoDesc:0;
-  document.getElementById('imp-col-val').value  = autoVal>=0?autoVal:1;
-  document.getElementById('imp-col-data').value = autoData>=0?autoData:-1;
-  document.getElementById('imp-col-tipo').value = autoTipo>=0?autoTipo:-1;
 }
 
-// Processa com as colunas que o usuário confirmou/ajustou
-function processarComMapeamento(){
-  const colDesc = parseInt(document.getElementById('imp-col-desc').value);
-  const colVal  = parseInt(document.getElementById('imp-col-val').value);
-  const colData = parseInt(document.getElementById('imp-col-data').value);
-  const colTipo = parseInt(document.getElementById('imp-col-tipo').value);
-  const tipoPadrao = document.getElementById('imp-tipo-padrao').value;
-
-  if(colDesc<0||colVal<0){ alert('Selecione pelo menos a coluna de descrição e a de valor.'); return; }
-
-  // Decide se a primeira linha é cabeçalho
-  const primeiro = impMatrizRaw[0]||[];
-  const primeiroDesc = String(primeiro[colDesc]||'').trim();
-  const primeiroVal  = extrairValor(primeiro[colVal]);
-  const ehCabecalho  = primeiroVal===0 && primeiroDesc.length>0 && isNaN(parseFloat(primeiroDesc));
-  const linhas = ehCabecalho ? impMatrizRaw.slice(1) : impMatrizRaw;
-
-  const rows = [];
-  const IGNORAR = /^(total|subtotal|saldo|falta pagar|reserva|soma|lazer|total dívida|total bruto|saldo final|reserva de emergencia)$/i;
-
-  for(const r of linhas){
-    if(!r||r.length===0) continue;
-    const desc = String(r[colDesc]||'').trim();
-    const val  = extrairValor(r[colVal]);
-    const data = colData>=0 ? detectarData(r[colData]) : '';
-
-    if(!desc || IGNORAR.test(desc)) continue;
-    if(/^\d[\d\.\,]*$/.test(desc)) continue; // desc puramente numérica
-    if(val<=0) continue;
-
-    let tipo = tipoPadrao;
-    if(colTipo>=0){
-      const t=String(r[colTipo]||'').toLowerCase();
-      if(t.includes('rec')||t.includes('entr')||t.includes('cred')||t==='r') tipo='receita';
-      if(t.includes('des')||t.includes('sai')||t==='d') tipo='despesa';
-    }
-    // Override por palavras na descrição
-    if(/sal[aá]rio|renda|entrada|freelance|bico|emprego|empresa|proventos/i.test(desc)) tipo='receita';
-
-    rows.push({desc, cat:tipo==='receita'?'Salário':'Outros', tipo, data, val});
-  }
-
-  if(rows.length===0){
-    alert('Nenhum lançamento encontrado com essas colunas.\n\nTente selecionar outras colunas.');
-    return;
-  }
-
-  importDados=rows;
-  const rec=rows.filter(r=>r.tipo==='receita').reduce((a,r)=>a+r.val,0);
-  const desp=rows.filter(r=>r.tipo==='despesa').reduce((a,r)=>a+r.val,0);
-  document.getElementById('imp-count').textContent=rows.length;
-  document.getElementById('imp-rec').textContent=fmt(rec);
-  document.getElementById('imp-desp').textContent=fmt(desp);
-  document.getElementById('import-msg').textContent=
-    state.lancamentos.length===0
-      ? 'Nenhum dado existente. Clique em "Adicionar" para importar.'
-      : `Você já tem ${state.lancamentos.length} lançamentos. Como quer proceder?`;
-  document.getElementById('imp-etapa-2').style.display='none';
-  document.getElementById('imp-etapa-3').style.display='block';
-}
-
-function extrairValor(v){
-  if(v===null||v===undefined||v==='') return 0;
-  const s=String(v).replace(/[R$\s]/g,'').replace(/\./g,'').replace(',','.');
-  const n=parseFloat(s);
-  return isNaN(n)?0:Math.abs(n);
-}
-
-function detectarData(v){
-  if(!v&&v!==0) return '';
-  const s=String(v).trim();
-  // dd/mm/yyyy ou dd/mm/yy
-  let m=s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
-  if(m){
-    const y=m[3].length===2?'20'+m[3]:m[3];
-    return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
-  }
-  // yyyy-mm-dd
+function parseDataBR(str){
+  if(!str) return '';
+  const s = String(str).trim();
+  const m = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
+  if(m){ const y=m[3].length===2?'20'+m[3]:m[3]; return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`; }
   if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
-  // número serial do Excel (dias desde 1900)
-  if(/^\d+$/.test(s)){
-    const n=parseInt(s);
-    if(n>10000&&n<60000){
-      const d=new Date((n-25569)*86400000);
-      if(!isNaN(d)){
-        return d.toISOString().substring(0,10);
-      }
-    }
-  }
+  // Serial Excel
+  if(/^\d+$/.test(s)){ const n=parseInt(s); if(n>10000&&n<60000){ const d=new Date((n-25569)*86400000); if(!isNaN(d)) return d.toISOString().substring(0,10); } }
   return '';
 }
 
+function mostrarPrevia(rows, nomeBanco){
+  importDados = rows;
+  const rec = rows.filter(r=>r.tipo==='receita').reduce((a,r)=>a+r.val,0);
+  const desp = rows.filter(r=>r.tipo==='despesa').reduce((a,r)=>a+r.val,0);
+  document.getElementById('imp-count').textContent = rows.length;
+  document.getElementById('imp-rec').textContent = fmt(rec);
+  document.getElementById('imp-desp').textContent = fmt(desp);
+  document.getElementById('import-msg').textContent = state.lancamentos.length===0
+    ? 'Nenhum dado existente. Clique em "Adicionar" para importar.'
+    : `Você já tem ${state.lancamentos.length} lançamentos. Como quer proceder?`;
+  document.getElementById('imp-banco-badge').innerHTML = nomeBanco
+    ? `<span style="background:var(--green-bg);color:var(--green);border:1px solid #8ECFB8;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600">✅ ${nomeBanco} detectado</span>`
+    : `<span style="background:var(--blue-bg);color:var(--blue);border:1px solid #A8C8F0;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600">📄 Formato genérico</span>`;
+  document.getElementById('imp-etapa-1').style.display = 'none';
+  document.getElementById('imp-etapa-2').style.display = 'block';
+  document.getElementById('imp-etapa-3').style.display = 'none';
+}
 
-// Palavras que indicam linhas de totais/resumo a ignorar
-const PALAVRAS_IGNORAR = /^(total|subtotal|saldo|falta pagar|reserva|soma|balance|lazer|total dívida|total bruto|saldo final|reserva de emergencia)$/i;
-// Palavras que indicam receita na descrição
-const PALAVRAS_RECEITA = /sal[aá]rio|renda|receita|entrada|bico|freelance|pagamento recebido|proventos|lucro|dividendo|bonus|bônus|reembolso|salario|empresa|emprego|trabalho/i;
-// Palavras-cabeçalho que indicam seção de receita
-const CABECALHO_RECEITA = /empresa|sal[aá]rio|renda|receita|entrada|income|earning/i;
-// Cabeçalhos de colunas que indicam lista de "contas já pagas" (bloco duplicado)
-const CABECALHO_PAGO = /contas pagas|pago|paid|já pago|concluído/i;
-
-function importarLinhasGenericas(data){
-  const todasLinhas = data;
-  if(!todasLinhas||!todasLinhas.length) return [];
-
-  const rows = [];
-
-  function extrairBlocos(linhas){
-    if(!linhas.length) return [];
-    const nCols = Math.max(...linhas.map(r=>r.length));
-    const resultado = [];
-
-    const colTemConteudo = Array.from({length:nCols},(_,j)=>
-      linhas.some(r=>r[j]!==null&&r[j]!==undefined&&String(r[j]).trim()!=='')
-    );
-    let blocos = [], ini = -1;
-    for(let j=0;j<=nCols;j++){
-      if(colTemConteudo[j]&&ini<0) ini=j;
-      if(!colTemConteudo[j]&&ini>=0){ blocos.push({ini,fim:j-1}); ini=-1; }
-    }
-
-    for(const {ini,fim} of blocos){
-      const subLinhas = linhas.map(r=>r.slice(ini,fim+1));
-      // Detecta se esse bloco é um resumo "contas pagas" (duplicado) pelo cabeçalho
-      const cabecalho = (subLinhas[0]||[]).map(c=>String(c||'').trim()).join(' ');
-      if(CABECALHO_PAGO.test(cabecalho)) continue; // pula blocos de "já pago"
-      const extraidos = extrairDeBloco(subLinhas);
-      resultado.push(...extraidos);
-    }
-    return resultado;
-  }
-
-  function extrairDeBloco(linhas){
-    const ll = linhas.filter(r=>r&&r.some(c=>c!==null&&c!==undefined&&String(c).trim()!==''));
-    if(!ll.length) return [];
-
-    const nCols = Math.max(...ll.map(r=>r.length));
-    const scores = Array.from({length:nCols},()=>({txt:0,num:0,dt:0}));
-    ll.slice(0,30).forEach(r=>{
-      r.forEach((c,j)=>{
-        if(c===null||c===undefined||String(c).trim()==='') return;
-        const v = extrairValor(c);
-        const d = detectarData(c);
-        const s = String(c).trim();
-        if(v>0) scores[j].num++;
-        if(d) scores[j].dt++;
-        if(s.length>1 && isNaN(parseFloat(s.replace(/[,\.]/g,''))) && !d) scores[j].txt++;
-      });
-    });
-
-    let colVal=-1, colDesc=-1, colData=-1, modoReceita=false;
-    let maxNum=0;
-    scores.forEach((s,j)=>{if(s.num>maxNum){maxNum=s.num;colVal=j;}});
-    if(colVal<0||maxNum<1) return [];
-    let maxTxt=0;
-    scores.forEach((s,j)=>{if(j!==colVal&&s.txt>maxTxt){maxTxt=s.txt;colDesc=j;}});
-    let maxDt=0;
-    scores.forEach((s,j)=>{if(j!==colVal&&j!==colDesc&&s.dt>maxDt){maxDt=s.dt;if(s.dt>0)colData=j;}});
-
-    // Detecta se esse bloco é de receitas pelo cabeçalho
-    for(let i=0;i<Math.min(ll.length,3);i++){
-      const h = ll[i].map(c=>String(c||'').trim()).join(' ');
-      if(CABECALHO_RECEITA.test(h)){ modoReceita=true; break; }
-    }
-
-    const resultado=[];
-    let emSecaoReceita = modoReceita;
-
-    for(const r of ll){
-      const desc = colDesc>=0 ? String(r[colDesc]||'').trim() : '';
-      const val  = colVal>=0  ? extrairValor(r[colVal]) : 0;
-      const dataStr = colData>=0 ? detectarData(r[colData]) : '';
-
-      // Ignora descrições puramente numéricas (linhas de total sem rótulo)
-      if(desc && /^\d[\d\.\,]*$/.test(desc)) continue;
-      // Detecta mudança de seção para receitas
-      if(desc && CABECALHO_RECEITA.test(desc) && val===0){ emSecaoReceita=true; continue; }
-      // Pula linhas de total/resumo
-      if(desc && PALAVRAS_IGNORAR.test(desc.trim())) continue;
-      // Pula linhas sem valor
-      if(val<=0) continue;
-      // Pula linhas sem descrição
-      if(!desc && colDesc>=0) continue;
-
-      let tipo = emSecaoReceita ? 'receita' : 'despesa';
-      if(PALAVRAS_RECEITA.test(desc)) tipo='receita';
-
-      resultado.push({
-        desc: desc||'Lançamento',
-        cat: tipo==='receita'?'Salário':'Outros',
-        tipo,
-        data: dataStr,
-        val
-      });
-    }
-    return resultado;
-  }
-
-  if(Array.isArray(data[0]) && Array.isArray(data[0][0])){
-    for(const aba of data){ rows.push(...extrairBlocos(aba)); }
-    return rows;
-  }
-  return extrairBlocos(data);
+function mostrarErro(msg){
+  document.getElementById('imp-erro-msg').textContent = msg;
+  document.getElementById('imp-etapa-1').style.display = 'none';
+  document.getElementById('imp-etapa-2').style.display = 'none';
+  document.getElementById('imp-etapa-3').style.display = 'block';
 }
 
 function handleImportFile(file){
   if(!file) return;
-  const ext=file.name.split('.').pop().toLowerCase();
-  const reader=new FileReader();
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
 
-  reader.onload=function(e){
+  reader.onload = function(e){
     try{
-      let matriz=[];
+      let linhas = [];
 
       if(ext==='csv'){
-        const text=e.target.result;
-        function parseCsvRobusto(txt){
-          const linhas=txt.split(/\r?\n/).filter(l=>l.trim());
-          if(!linhas.length) return [];
-          const primeira=linhas[0];
-          const qtdSemicolon=(primeira.match(/;/g)||[]).length;
-          const qtdComma=(primeira.match(/,/g)||[]).length;
-          const qtdTab=(primeira.match(/\t/g)||[]).length;
-          let sep=',';
-          if(qtdSemicolon>qtdComma&&qtdSemicolon>=qtdTab) sep=';';
-          else if(qtdTab>qtdComma&&qtdTab>qtdSemicolon) sep='\t';
-          return linhas.map(linha=>{
-            const campos=[];
-            let i=0,campo='',dentroAspas=false;
-            while(i<linha.length){
-              const c=linha[i];
-              if(c==='"'){if(dentroAspas&&linha[i+1]==='"'){campo+='"';i+=2;continue;}dentroAspas=!dentroAspas;}
-              else if(c===sep&&!dentroAspas){campos.push(campo.trim());campo='';}
-              else{campo+=c;}
-              i++;
-            }
-            campos.push(campo.trim());
-            return campos;
-          });
-        }
-
-        // Verifica se é formato do próprio app (desc, cat, Receita/Despesa, data, valor)
-        const m=parseCsvRobusto(text);
-        const appRows=m.filter(cols=>{const t=(cols[2]||'').trim();return cols.length>=4&&(t==='Receita'||t==='Despesa');})
-          .map(cols=>({desc:cols[0]||'',cat:cols[1]||'Outros',tipo:cols[2]==='Receita'?'receita':'despesa',data:parseDataBR(cols[3]),val:parseFloat((cols[4]||'0').replace(',','.'))||0}));
-        if(appRows.length>0){
-          finalizarImport(appRows); return;
-        }
-        matriz=m;
-
+        linhas = parseCsvRobusto(e.target.result);
       } else {
-        const wb=XLSX.read(e.target.result,{type:'array'});
-        const todasAbas=wb.SheetNames.map(nome=>XLSX.utils.sheet_to_json(wb.Sheets[nome],{header:1,raw:false,dateNF:'yyyy-mm-dd'}));
-
-        // Verifica se é formato do próprio app
-        const primeiraAba=todasAbas[0]||[];
-        const appRows=primeiraAba.filter(r=>r.length>=4&&(r[2]==='Receita'||r[2]==='Despesa'))
-          .map(r=>({desc:String(r[0]||''),cat:String(r[1]||'Outros'),tipo:r[2]==='Receita'?'receita':'despesa',data:parseDataBR(String(r[3]||'')),val:parseFloat(String(r[4]||'0').replace(',','.'))||0}));
-        if(appRows.length>0){
-          finalizarImport(appRows); return;
-        }
-
-        // Achata todas as abas em uma única matriz para o mapeamento
-        const todasLinhas=[];
-        todasAbas.forEach(aba=>{todasLinhas.push(...aba);todasLinhas.push([]);});
-        matriz=todasLinhas;
+        const wb = XLSX.read(e.target.result, {type:'array'});
+        linhas = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, raw:false, dateNF:'dd/mm/yyyy'});
       }
 
-      // Salva a matriz para caso o usuário queira ajustar manualmente
-      impMatrizRaw=matriz;
-
-      // Tenta detecção automática
-      const autoRows=importarLinhasGenericas(matriz);
-
-      if(autoRows.length>0){
-        // ✅ Automático funcionou → vai direto para a prévia
-        finalizarImport(autoRows);
-      } else {
-        // ❌ Automático falhou → abre mapeamento manual
-        mostrarMapeamento(matriz);
+      if(!linhas||linhas.length<2){
+        mostrarErro('O arquivo está vazio ou não contém dados suficientes.');
+        return;
       }
+
+      const banco = detectarBanco(linhas[0]);
+      let rows = [];
+
+      if(banco==='nubank'){
+        rows = lerNubank(linhas);
+      } else {
+        rows = lerGenerico(linhas);
+      }
+
+      rows = rows.filter(r=>r&&r.val>0);
+
+      if(!rows.length){
+        mostrarErro('Não encontramos lançamentos válidos nesse arquivo. Verifique se é um extrato bancário exportado em CSV ou Excel.');
+        return;
+      }
+
+      const nomesBanco = {nubank:'Nubank', inter:'Inter', itau:'Itaú', bradesco:'Bradesco'};
+      mostrarPrevia(rows, nomesBanco[banco]||null);
 
     } catch(err){
-      alert('Erro ao ler o arquivo. Tente salvar como .xlsx ou .csv e tente novamente.\n\nDetalhe: '+err.message);
+      mostrarErro('Erro ao processar o arquivo: '+err.message);
     }
   };
 
@@ -2388,43 +2162,15 @@ function handleImportFile(file){
   else reader.readAsArrayBuffer(file);
 }
 
-function finalizarImport(rows){
-  rows=rows.filter(r=>r.val>0);
-  if(!rows.length){ alert('Nenhum lançamento com valor encontrado.'); return; }
-  importDados=rows;
-  const rec=rows.filter(r=>r.tipo==='receita').reduce((a,r)=>a+r.val,0);
-  const desp=rows.filter(r=>r.tipo==='despesa').reduce((a,r)=>a+r.val,0);
-  document.getElementById('imp-count').textContent=rows.length;
-  document.getElementById('imp-rec').textContent=fmt(rec);
-  document.getElementById('imp-desp').textContent=fmt(desp);
-  document.getElementById('import-msg').textContent=
-    state.lancamentos.length===0
-      ? 'Nenhum dado existente. Clique em "Adicionar" para importar.'
-      : `Você já tem ${state.lancamentos.length} lançamentos. Como quer proceder?`;
-  document.getElementById('imp-etapa-1').style.display='none';
-  document.getElementById('imp-etapa-2').style.display='none';
-  document.getElementById('imp-etapa-3').style.display='block';
-}
-
-function parseDataBR(str){
-  if(!str) return '';
-  // dd/mm/yyyy -> yyyy-mm-dd
-  const m=str.match(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/);
-  if(m) return `${m[3]}-${m[2]}-${m[1]}`;
-  // yyyy-mm-dd já está correto
-  if(/[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(str)) return str.substring(0,10);
-  return '';
-}
-
 async function confirmarImport(modo){
-  if(importDados.length===0) return;
+  if(!importDados.length) return;
   if(modo==='replace'){
-    state.lancamentos=importDados.map((r,i)=>({...r,id:state.nextId+i}));
-    state.nextId+=importDados.length;
+    state.lancamentos = importDados.map((r,i)=>({...r,id:state.nextId+i}));
+    state.nextId += importDados.length;
   } else {
-    const novos=importDados.map((r,i)=>({...r,id:state.nextId+i}));
-    state.lancamentos=[...state.lancamentos,...novos];
-    state.nextId+=importDados.length;
+    const novos = importDados.map((r,i)=>({...r,id:state.nextId+i}));
+    state.lancamentos = [...state.lancamentos,...novos];
+    state.nextId += importDados.length;
   }
   await saveData();
   render();
