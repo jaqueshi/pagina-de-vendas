@@ -1600,8 +1600,8 @@ function renderDividas(){
         </div>
         <select onchange="alterarStatusDivida(${d.id},this.value)" style="font-family:'DM Sans',sans-serif;font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;cursor:pointer;">
           <option value="pendente" ${d.status==='pendente'?'selected':''}>🔴 Pendente</option>
-          <option value="negociando" ${d.status==='negociando'?'selected':''}>🟡 Negociando</option>
-          <option value="negociada" ${d.status==='negociada'?'selected':''}>🟢 Negociada</option>
+          <option value="pagando" ${d.status==='pagando'?'selected':''}>🟡 Pagando</option>
+          <option value="finalizada" ${d.status==='finalizada'?'selected':''}>🟢 Finalizada</option>
         </select>
       </div>
       <div class="divida-stats">
