@@ -139,7 +139,7 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
 /* Cards */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
 .card .label{font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
 .card .value{font-size:21px;font-weight:600;font-family:'DM Mono',monospace;}
@@ -368,8 +368,8 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
 
 /* ===== MOBILE RESPONSIVO ===== */
 @media(max-width:600px){
-  body { overflow-x: hidden; }
-  .app { padding: 16px 12px 100px; max-width: 100%; }
+  body { overflow-x: hidden; width: 100%; }
+  .app { padding: 16px 12px 100px; max-width: 100%; overflow-x: hidden; }
   .header { flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
   .header-left h1 { font-size: 17px; }
   .header-left p { font-size: 12px; }
@@ -378,47 +378,49 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
   .nav { gap: 3px; padding: 4px; }
   .nav button { font-size: 11px; padding: 8px 6px; }
 
-  /* Cards resumo */
-  .cards { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .card .value { font-size: 16px; }
-  .card { padding: 12px; }
+  /* Cards resumo - força 1 coluna */
+  .cards { grid-template-columns: 1fr 1fr !important; gap: 8px; }
+  .card .value { font-size: 15px; }
+  .card { padding: 11px 12px; }
 
-  /* Gráficos */
-  .charts-grid { grid-template-columns: 1fr; gap: 12px; }
+  /* Gráficos - 1 coluna */
+  .charts-grid { grid-template-columns: 1fr !important; gap: 12px; }
 
-  /* Formulários */
+  /* Formulários - empilha tudo */
   .form-area { padding: 12px; }
-  .form-row { flex-direction: column; align-items: stretch; gap: 8px; }
-  .form-row input, .form-row select { width: 100% !important; min-width: unset !important; }
+  .form-row { flex-direction: column !important; align-items: stretch !important; gap: 8px; }
+  .form-row input, .form-row select { width: 100% !important; min-width: unset !important; box-sizing: border-box; }
   .f-desc, .f-val, .f-data, .f-cat, .f-tipo { width: 100% !important; min-width: unset !important; }
-  .btn-add { width: 100%; padding: 12px; font-size: 15px; }
+  .btn-add { width: 100% !important; padding: 12px; font-size: 15px; }
 
   /* Filter row */
   .filter-row { flex-wrap: wrap; gap: 6px; }
   .filter-row select { font-size: 13px; flex: 1; min-width: 110px; }
 
-  /* Orçamento */
-  .orc-grid { grid-template-columns: 1fr; }
+  /* Orçamento - 1 coluna */
+  .orc-grid { grid-template-columns: 1fr !important; }
 
-  /* Contas fixas */
-  .fixas-grid { grid-template-columns: 1fr; }
+  /* Contas fixas - 1 coluna */
+  .fixas-grid { grid-template-columns: 1fr !important; }
   .fixa-edit-row { flex-wrap: wrap; }
   .fixa-edit-row input { width: 100% !important; }
 
   /* Metas */
-  .add-meta-form { flex-direction: column; align-items: stretch; }
+  .add-meta-form { flex-direction: column !important; align-items: stretch !important; }
   .add-meta-form input, .add-meta-form .f-nome, .add-meta-form .f-num { width: 100% !important; min-width: unset !important; }
   .meta-acoes { flex-direction: column; align-items: flex-start; }
   .meta-input-row { flex-wrap: wrap; width: 100%; }
-  .meta-input-row input { flex: 1; width: auto !important; }
+  .meta-input-row input { flex: 1; min-width: 80px; }
 
   /* Dívidas */
-  .dividas-resumo { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .divida-stats { grid-template-columns: 1fr 1fr; }
+  .dividas-resumo { grid-template-columns: 1fr 1fr !important; gap: 8px; }
+  .divida-stats { grid-template-columns: 1fr 1fr !important; }
 
   /* Relatório */
-  .rel-resumo { grid-template-columns: 1fr; gap: 8px; }
-  .rel-header { flex-direction: column; align-items: flex-start; }
+  .rel-resumo { grid-template-columns: 1fr !important; gap: 8px; }
+  .rel-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .rel-pct-bar { flex-wrap: wrap; }
+  .rel-mini-bar { width: 60px; }
 
   /* Resumo fixas */
   .resumo-fixas-title { flex-direction: column; gap: 4px; }
@@ -427,7 +429,7 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
   .saldo-row { font-size: 13px; padding: 10px 12px; }
 
   /* Modais */
-  .modal-box { padding: 20px 16px; margin: 0 8px; }
+  .modal-box { padding: 20px 16px; margin: 0 4px; max-width: calc(100vw - 32px); }
   .modal-btns { flex-direction: column; }
   .modal-btns button { width: 100%; }
 
@@ -437,6 +439,11 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
   /* Custo vida */
   .custo-vida { padding: 14px 16px; }
   .custo-val { font-size: 22px; }
+
+  /* Header direito */
+  .header-right { gap: 6px !important; }
+  .dropdown { width: 220px; right: -10px; }
+  .notif-panel { width: 260px; right: -10px; }
 }
 
 
@@ -1245,7 +1252,7 @@ function renderDash(){
   document.getElementById('dash').innerHTML=`
     <div class="filter-row"><label>Período:</label>${filterSelects()}</div>
     ${alerta}
-    <div class="cards" style="${isMobile()?'grid-template-columns:1fr 1fr':'grid-template-columns:repeat(4,1fr)'}">
+    <div class="cards">
       <div class="card"><div class="label">Receitas</div><div class="value green">${fmt(rec)}</div></div>
       <div class="card"><div class="label">Despesas</div><div class="value red">${fmt(desp)}</div></div>
       <div class="card"><div class="label">Saldo</div><div class="value ${saldo>=0?'green':'red'}">${fmt(saldo)}</div></div>
