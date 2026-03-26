@@ -1368,6 +1368,7 @@ function renderLanc(){
         <option value="az" ${filterOrdem==='az'?'selected':''}>🔤 A → Z</option>
         <option value="za" ${filterOrdem==='za'?'selected':''}>🔤 Z → A</option>
       </select>
+      ${lancs.length>0?`<button onclick="askDel(()=>limparLancamentosMes())" style="margin-left:auto;background:var(--red-bg);color:var(--red);border:1px solid #F5A89A;border-radius:var(--radius-sm);padding:7px 14px;cursor:pointer;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;">🗑️ Limpar ${MESES[filterMes-1]}</button>`:''}
     </div>
     <div class="table-wrap">
       ${isMobile()?"":"<div class=\"t-head\" style=\"grid-template-columns:1fr 95px 80px 120px\"><span>Descrição</span><span>Data</span><span>Tipo</span><span style=\"text-align:right\">Valor</span></div>"}
@@ -1546,6 +1547,13 @@ function addLanc(){
   saveData();render();
 }
 function delLanc(id){state.lancamentos=state.lancamentos.filter(l=>l.id!==id);saveData();render();}
+
+async function limparLancamentosMes(){
+  const ids=lancFiltrados().map(l=>l.id);
+  state.lancamentos=state.lancamentos.filter(l=>!ids.includes(l.id));
+  await saveData();
+  render();
+}
 function addOrc(){
   const cat=document.getElementById('o-cat').value;
   const val=parseFloat(document.getElementById('o-val').value);
@@ -1991,15 +1999,22 @@ function lerNubank(linhas){
     const valor = parseFloat((r[1]||'0').replace(',','.'));
     const desc = limparDescricao(r[3]||r[2]||'');
     if(!desc||isNaN(valor)||valor===0) return null;
+    // Nubank: positivo = receita, negativo = despesa — simples assim
+    const tipo = valor > 0 ? 'receita' : 'despesa';
     return {
       desc,
-      cat: valor > 0 ? 'Salário' : 'Outros',
-      tipo: valor > 0 ? 'receita' : 'despesa',
+      cat: tipo === 'receita' ? 'Salário' : 'Outros',
+      tipo,
       data,
       val: Math.abs(valor)
     };
   }).filter(Boolean);
 }
+
+// Palavras que indicam receita na descrição (independente do banco)
+const PALAVRAS_RECEITA_DESC = /receb[iu]|transferência recebida|pix recebido|crédito recebido|depósito|deposito|salário|salario|renda|freelance|pagamento recebido|proventos|lucro|dividendo|bônus|bonus|reembolso|entrada/i;
+// Palavras que indicam despesa
+const PALAVRAS_DESPESA_DESC = /envi[ao]|transferência enviada|pix enviado|débito|pagamento efetuado|pagamento de boleto|compra|saque/i;
 
 // Lê extrato genérico: tenta detectar colunas de data, descrição e valor
 function lerGenerico(linhas){
@@ -2028,14 +2043,22 @@ function lerGenerico(linhas){
   if(colVal<0||colDesc<0) return [];
 
   const IGNORAR = /^(total|subtotal|saldo|soma|balance|saldo final)$/i;
-  const RECEITA = /sal[aá]rio|renda|receita|entrada|pix recebido|transferência recebida|deposito|crédito|freelance|pagamento recebido/i;
 
   return linhas.slice(1).map(r=>{
     const desc = limparDescricao(String(r[colDesc]||'').trim());
     const valBruto = parseFloat(String(r[colVal]||'0').replace(/[R$\s\.]/g,'').replace(',','.'));
     const data = colData>=0 ? parseDataBR(String(r[colData]||'')) : '';
     if(!desc||IGNORAR.test(desc)||isNaN(valBruto)||valBruto===0) return null;
-    const tipo = RECEITA.test(desc)||valBruto>0 ? 'receita' : 'despesa';
+
+    let tipo;
+    // 1. Tenta pelo sinal do valor
+    if(valBruto > 0) tipo = 'receita';
+    else if(valBruto < 0) tipo = 'despesa';
+    // 2. Se não tiver sinal, usa palavras da descrição
+    else if(PALAVRAS_RECEITA_DESC.test(desc)) tipo = 'receita';
+    else if(PALAVRAS_DESPESA_DESC.test(desc)) tipo = 'despesa';
+    else tipo = 'despesa'; // padrão
+
     return { desc, cat: tipo==='receita'?'Salário':'Outros', tipo, data, val: Math.abs(valBruto) };
   }).filter(Boolean);
 }
