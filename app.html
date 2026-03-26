@@ -1368,8 +1368,13 @@ function renderLanc(){
         <option value="az" ${filterOrdem==='az'?'selected':''}>🔤 A → Z</option>
         <option value="za" ${filterOrdem==='za'?'selected':''}>🔤 Z → A</option>
       </select>
-      ${lancs.length>0?`<button onclick="askDel(()=>limparLancamentosMes())" style="margin-left:auto;background:var(--red-bg);color:var(--red);border:1px solid #F5A89A;border-radius:var(--radius-sm);padding:7px 14px;cursor:pointer;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;">🗑️ Limpar ${MESES[filterMes-1]}</button>`:''}
     </div>
+    ${lancs.length>0?`
+    <div style="margin-bottom:16px">
+      <button onclick="askDel(()=>limparLancamentosMes())" style="width:100%;background:var(--red-bg);color:var(--red);border:1px solid #F5A89A;border-radius:var(--radius-sm);padding:10px;cursor:pointer;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;">
+        🗑️ Limpar todos os lançamentos de ${MESES[filterMes-1]} ${filterAno} (${lancs.length} lançamento${lancs.length>1?'s':''})
+      </button>
+    </div>`:''}
     <div class="table-wrap">
       ${isMobile()?"":"<div class=\"t-head\" style=\"grid-template-columns:1fr 95px 80px 120px\"><span>Descrição</span><span>Data</span><span>Tipo</span><span style=\"text-align:right\">Valor</span></div>"}
       ${rows||'<div class="empty">Nenhum lançamento neste período</div>'}
@@ -1995,19 +2000,31 @@ function detectarBanco(cabecalho){
 // Lê CSV do Nubank: Data,Valor,Identificador,Descrição
 function lerNubank(linhas){
   return linhas.slice(1).map(r=>{
-    const data = parseDataBR(r[0]||'');
-    const valor = parseFloat((r[1]||'0').replace(',','.'));
-    const desc = limparDescricao(r[3]||r[2]||'');
-    if(!desc||isNaN(valor)||valor===0) return null;
-    // Nubank: positivo = receita, negativo = despesa — simples assim
+    if(!r||r.length<2) return null;
+    // Remove aspas extras e espaços das células
+    const dataRaw = String(r[0]||'').replace(/"/g,'').trim();
+    const valorRaw = String(r[1]||'').replace(/"/g,'').trim();
+    const descOriginal = String(r[3]||r[2]||'').replace(/"/g,'').trim();
+
+    const data = parseDataBR(dataRaw);
+    const valor = parseFloat(valorRaw.replace(',','.'));
+    const desc = limparDescricao(descOriginal);
+
+    if(!descOriginal||isNaN(valor)||valor===0) return null;
+
+    // Nubank: positivo = receita, negativo = despesa
     const tipo = valor > 0 ? 'receita' : 'despesa';
-    return {
-      desc,
-      cat: tipo === 'receita' ? 'Salário' : 'Outros',
-      tipo,
-      data,
-      val: Math.abs(valor)
-    };
+
+    // Categoria automática pela descrição original
+    let cat = tipo === 'receita' ? 'Salário' : 'Outros';
+    if(/alimenta|mercado|supermercado|restaurante|lanche|ifood|rappi/i.test(descOriginal)) cat='Alimentação';
+    else if(/farmácia|farmacia|saúde|saude|médico|medico|hospital|clinic/i.test(descOriginal)) cat='Saúde';
+    else if(/escola|faculdade|curso|educação|educacao/i.test(descOriginal)) cat='Educação';
+    else if(/uber|99|onibus|ônibus|metro|metrô|gasolina|posto|combustivel/i.test(descOriginal)) cat='Transporte';
+    else if(/aluguel|condominio|condomínio|luz|água|agua|internet|telefone|celular/i.test(descOriginal)) cat='Moradia';
+    else if(/netflix|spotify|amazon|prime|disney|youtube/i.test(descOriginal)) cat='Assinaturas';
+
+    return { desc: desc||descOriginal.substring(0,80), cat, tipo, data, val: Math.abs(valor) };
   }).filter(Boolean);
 }
 
