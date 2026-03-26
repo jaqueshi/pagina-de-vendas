@@ -271,7 +271,7 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
 
 /* Dívidas */
 .divida-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; position: relative; }
-.divida-card.negociada { opacity: .6; border-color: var(--green); }
+.divida-card.finalizada { opacity: .6; border-color: var(--green); }
 .divida-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
 .divida-nome { font-weight: 700; font-size: 15px; padding-right: 28px; }
 .divida-inst { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
@@ -1567,7 +1567,7 @@ function calcularDivida(d){
 }
 
 function proximaParcela(d){
-  if(!d.diaVenc||d.status==='negociada') return '';
+  if(!d.diaVenc||d.status==='finalizada') return '';
   const hoje=new Date();
   let data=new Date(hoje.getFullYear(),hoje.getMonth(),d.diaVenc);
   if(data<hoje) data=new Date(hoje.getFullYear(),hoje.getMonth()+1,d.diaVenc);
@@ -1580,7 +1580,7 @@ function proximaParcela(d){
 
 function renderDividas(){
   const dividas=state.dividas||[];
-  const ativas=dividas.filter(d=>d.status!=='negociada');
+  const ativas=dividas.filter(d=>d.status!=='finalizada');
   const totalOriginal=ativas.reduce((a,d)=>a+(d.val||0),0);
   const totalComJuros=ativas.reduce((a,d)=>a+calcularDivida(d).totalComJuros,0);
   const totalRestante=ativas.reduce((a,d)=>a+calcularDivida(d).totalRestante,0);
@@ -1591,7 +1591,7 @@ function renderDividas(){
     const prox=proximaParcela(d);
     const pagas=d.pagas||0;
     const parcelas=d.parcelas||1;
-    return `<div class="divida-card ${d.status==='negociada'?'negociada':''}">
+    return `<div class="divida-card ${d.status==='finalizada'?'finalizada':''}">
       <button class="btn-del divida-del" onclick="askDel(()=>delDivida(${d.id}))" style="font-size:16px;opacity:.5" title="Excluir">×</button>
       <div class="divida-top">
         <div>
@@ -1712,7 +1712,7 @@ function marcarParcelaPaga(id, checked){
   if(!d) return;
   if(checked) d.pagas=Math.min((d.pagas||0)+1, d.parcelas||1);
   else d.pagas=Math.max((d.pagas||0)-1, 0);
-  if(d.pagas>=(d.parcelas||1)) d.status='negociada';
+  if(d.pagas>=(d.parcelas||1)) d.status='finalizada';
   saveData(); render();
 }
 function delDivida(id){ state.dividas=state.dividas.filter(d=>d.id!==id); saveData(); render(); }
@@ -1785,7 +1785,7 @@ function gerarListaNotifs(){
   // Alertas de dívidas com parcela próxima
   const hoje3=new Date();
   const diaHoje=hoje3.getDate();
-  (state.dividas||[]).filter(d=>d.status!=='negociada'&&d.diaVenc&&d.pagas<(d.parcelas||1)).forEach(d=>{
+  (state.dividas||[]).filter(d=>d.status!=='finalizada'&&d.diaVenc&&d.pagas<(d.parcelas||1)).forEach(d=>{
     const dias=d.diaVenc-diaHoje;
     if(dias>=0&&dias<=5){
       const c=calcularDivida(d);
