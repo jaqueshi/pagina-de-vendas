@@ -311,8 +311,23 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
 .rf-atrasado { background: var(--red-bg); }
 .rf-hoje { background: var(--amber-bg); }
 
+/* Cartões de crédito */
+.cartao-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
+.cartao-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.cartao-nome{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;}
+.cartao-bar-bg{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.cartao-bar-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.cartao-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.cartao-stat{background:var(--surface2);border-radius:var(--radius-sm);padding:8px 10px;}
+.cartao-stat .cs-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:600;margin-bottom:3px;}
+.cartao-stat .cs-val{font-size:14px;font-weight:700;font-family:'DM Mono',monospace;}
+.cartao-fatura-items{border-top:1px solid var(--border);padding-top:10px;margin-top:4px;}
+.cartao-fatura-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.cartao-fatura-item:last-child{border-bottom:none;}
+.btn-pagar-fatura{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 16px;cursor:pointer;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;transition:opacity .15s;width:100%;margin-top:10px;}
+.btn-pagar-fatura:hover{opacity:.88;}
+
 /* Dívidas */
-.divida-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; position: relative; }
 .divida-card.finalizada { opacity: .6; border-color: var(--green); }
 .divida-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
 .divida-nome { font-weight: 700; font-size: 15px; padding-right: 28px; }
@@ -572,6 +587,7 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
       <button onclick="showTab('orc',this)">🎯 Orçamento</button>
       <button onclick="showTab('metas',this)">⭐ Metas</button>
       <button onclick="showTab('fixas',this)">📌 Contas Fixas</button>
+      <button onclick="showTab('cartoes',this)">💳 Cartões</button>
       <button onclick="showTab('dividas',this)">🔴 Dívidas</button>
       <button onclick="showTab('rel',this)">📄 Relatório</button>
     </div>
@@ -582,6 +598,7 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
     <div id="orc" class="section"></div>
     <div id="metas" class="section"></div>
     <div id="fixas" class="section"></div>
+    <div id="cartoes" class="section"></div>
     <div id="rel" class="section"></div>
     <div id="dividas" class="section"></div>
 
@@ -970,6 +987,7 @@ async function openApp(email, nome, dados){
   if(!state.notifsLidas) state.notifsLidas=[];
   if(!state.fixas) state.fixas=[];
   if(!state.dividas) state.dividas=[];
+  if(!state.cartoes) state.cartoes=[];
   // Carregar foto salva
   const fotoSalva=localStorage.getItem('perfil-foto-'+email);
   if(fotoSalva) aplicarFoto(fotoSalva);
@@ -1074,7 +1092,7 @@ let currentUser='';
 
 const CATS=['Moradia','Alimentação','Comer fora','Transporte','Saúde','Vestuário','Educação','Família/Filhos','Lazer','Dívidas','Cuidado Pessoal','Pet','Assinaturas','Emergência','Presentes','Viagem'];
 const CATS_RECEITA=['Salário','Renda extra','Bônus','Décimo terceiro','Férias','Freelance','Aluguel recebido','Dividendos/Investimentos','Vendas','Pensão/Mesada'];
-function defaultState(){return{lancamentos:[],orcamentos:{},metas:[],fixas:[],dividas:[],notifsLidas:[],nextId:1};}
+function defaultState(){return{lancamentos:[],orcamentos:{},metas:[],fixas:[],dividas:[],cartoes:[],notifsLidas:[],nextId:1};}
 let state=defaultState();
 function loadUserData(email){
   currentUser=email;
@@ -1188,12 +1206,14 @@ function showTab(t,btn){
   btn.classList.add('active');
   render();
 }
-function render(){renderDash();renderLanc();renderOrc();renderMetas();renderFixas();renderRelatorio();renderDividas();atualizarNotificacoes();}
+function render(){renderDash();renderLanc();renderOrc();renderMetas();renderFixas();renderCartoes();renderRelatorio();renderDividas();atualizarNotificacoes();}
 
 function renderDash(){
   const lancs=lancFiltrados();
   const rec=lancs.filter(l=>l.tipo==='receita').reduce((a,l)=>a+l.val,0);
-  const desp=lancs.filter(l=>l.tipo==='despesa').reduce((a,l)=>a+l.val,0);
+  // Despesas na fatura do cartão NÃO afetam o saldo (só saem quando pagar a fatura)
+  const desp=lancs.filter(l=>l.tipo==='despesa'&&!l.naFatura).reduce((a,l)=>a+l.val,0);
+  const despCartao=lancs.filter(l=>l.tipo==='despesa'&&l.naFatura).reduce((a,l)=>a+l.val,0);
   const saldo=rec-desp;
   const investido=state.metas.reduce((a,m)=>a+(m.atual||0),0);
   // Resumo contas fixas
@@ -1328,6 +1348,7 @@ function renderLanc(){
         ${fmt(l.val)} <button class="btn-del" onclick="askDel(()=>delLanc(${l.id}))">×</button>
       </span>
     </div>`).join('');
+  const cartoesOpts=(state.cartoes||[]).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
   document.getElementById('lanc').innerHTML=`
     <p class="sec-title">Novo lançamento</p>
     <div class="form-area">
@@ -1335,7 +1356,7 @@ function renderLanc(){
         <input class="f-desc" id="l-desc" placeholder="Descrição" />
         <select class="f-tipo" id="l-tipo" onchange="atualizarCats()"><option value="despesa">Despesa</option><option value="receita">Receita</option></select>
         <select class="f-cat" id="l-cat">${catOpts}</select>
-        <select class="f-pgto" id="l-pgto" style="font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;">
+        <select class="f-pgto" id="l-pgto" onchange="toggleCartaoSelect()" style="font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;">
           <option value="">💳 Pagamento</option>
           <option value="pix">🟣 PIX</option>
           <option value="debito">💳 Débito</option>
@@ -1343,6 +1364,9 @@ function renderLanc(){
           <option value="dinheiro">💵 Dinheiro</option>
           <option value="vale-alimentacao">🛒 Vale Alimentação</option>
           <option value="vale-refeicao">🍽️ Vale Refeição</option>
+        </select>
+        <select id="l-cartao" style="display:none;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 10px;border:1px solid var(--accent);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;">
+          ${cartoesOpts||'<option value="">Sem cartões cadastrados</option>'}
         </select>
         <input class="f-val" id="l-val" type="number" placeholder="R$ valor" min="0" step="0.01" />
         <input class="f-data" id="l-data" type="date" value="${hoje}" />
@@ -1540,6 +1564,135 @@ function renderRelatorio(){
 
 // ===== AÇÕES =====
 const PGTO_LABEL={'pix':'PIX','debito':'Débito','credito':'Crédito','dinheiro':'Dinheiro','vale-alimentacao':'V. Alimentação','vale-refeicao':'V. Refeição'};
+// ===== CARTÕES DE CRÉDITO =====
+function renderCartoes(){
+  const cartoes=state.cartoes||[];
+  const hoje=new Date();
+  const mesAtual=hoje.getMonth()+1;
+  const anoAtual=hoje.getFullYear();
+
+  const cards=cartoes.map(c=>{
+    // Compras na fatura aberta (mês atual)
+    const comprasFatura=state.lancamentos.filter(l=>
+      l.naFatura && l.cartaoId===String(c.id) &&
+      l.data && new Date(l.data+'T12:00:00').getMonth()+1===mesAtual &&
+      new Date(l.data+'T12:00:00').getFullYear()===anoAtual
+    );
+    const totalFatura=comprasFatura.reduce((a,l)=>a+l.val,0);
+    const disponivel=Math.max((c.limite||0)-totalFatura,0);
+    const pct=c.limite>0?Math.min(Math.round(totalFatura/c.limite*100),100):0;
+    const barCor=pct>=90?'var(--red)':pct>=70?'var(--amber)':'var(--green)';
+    const itens=comprasFatura.length>0
+      ?comprasFatura.slice(-5).reverse().map(l=>`
+        <div class="cartao-fatura-item">
+          <span>${l.desc}</span>
+          <span style="font-family:'DM Mono',monospace;color:var(--red);font-weight:600">${fmt(l.val)}</span>
+        </div>`).join('')
+      :'<div style="text-align:center;padding:12px;color:var(--muted);font-size:13px">Nenhuma compra este mês</div>';
+    return `<div class="cartao-card">
+      <div class="cartao-header">
+        <div class="cartao-nome">💳 ${c.nome}</div>
+        <button class="btn-del" onclick="askDel(()=>delCartao(${c.id}))" style="font-size:16px;opacity:.5">×</button>
+      </div>
+      <div class="cartao-stats">
+        <div class="cartao-stat"><div class="cs-label">Limite</div><div class="cs-val">${fmt(c.limite)}</div></div>
+        <div class="cartao-stat"><div class="cs-label">Fatura atual</div><div class="cs-val" style="color:var(--red)">${fmt(totalFatura)}</div></div>
+        <div class="cartao-stat"><div class="cs-label">Disponível</div><div class="cs-val" style="color:var(--green)">${fmt(disponivel)}</div></div>
+      </div>
+      <div class="cartao-bar-bg"><div class="cartao-bar-fill" style="width:${pct}%;background:${barCor}"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:10px">
+        <span>${pct}% do limite usado</span>
+        <span>Vence dia ${String(c.diaVenc||1).padStart(2,'0')}</span>
+      </div>
+      <div class="cartao-fatura-items">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Compras deste mês</div>
+        ${itens}
+      </div>
+      ${totalFatura>0?`<button class="btn-pagar-fatura" onclick="pagarFatura(${c.id})">💰 Pagar fatura — ${fmt(totalFatura)}</button>`:''}
+    </div>`;
+  }).join('');
+
+  document.getElementById('cartoes').innerHTML=`
+    <p class="sec-title">Novo cartão</p>
+    <div class="form-area">
+      <div class="form-row">
+        <input class="f-desc" id="c-nome" placeholder="Nome do cartão (ex: Nubank)" />
+        <input style="width:130px" id="c-limite" type="number" placeholder="Limite R$" min="0" step="100" />
+        <input style="width:100px" id="c-dia-venc" type="number" placeholder="Dia venc." min="1" max="31" />
+        <button class="btn-add" onclick="addCartao()">+ Adicionar</button>
+      </div>
+    </div>
+    ${cartoes.length>0
+      ? `<div style="background:var(--blue-bg);border:1px solid #A8C8F0;border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--blue);margin-bottom:20px">
+          💡 Compras no crédito vão para a fatura do cartão e <strong>não afetam seu saldo disponível</strong>. Ao pagar a fatura, o valor é descontado do saldo.
+        </div>
+        ${cards}`
+      : '<div class="empty">Nenhum cartão cadastrado. Adicione um cartão para controlar suas faturas!</div>'
+    }`;
+}
+
+function addCartao(){
+  const nome=document.getElementById('c-nome').value.trim();
+  const limite=parseFloat(document.getElementById('c-limite').value)||0;
+  const diaVenc=parseInt(document.getElementById('c-dia-venc').value)||1;
+  if(!nome) return;
+  if(!state.cartoes) state.cartoes=[];
+  state.cartoes.push({id:state.nextId++,nome,limite,diaVenc});
+  saveData();render();
+}
+
+function delCartao(id){
+  state.cartoes=state.cartoes.filter(c=>c.id!==id);
+  saveData();render();
+}
+
+async function pagarFatura(cartaoId){
+  const hoje=new Date();
+  const mesAtual=hoje.getMonth()+1;
+  const anoAtual=hoje.getFullYear();
+  const c=(state.cartoes||[]).find(c=>c.id===cartaoId);
+  if(!c) return;
+
+  // Total da fatura do mês atual
+  const comprasFatura=state.lancamentos.filter(l=>
+    l.naFatura && l.cartaoId===String(cartaoId) &&
+    l.data && new Date(l.data+'T12:00:00').getMonth()+1===mesAtual &&
+    new Date(l.data+'T12:00:00').getFullYear()===anoAtual
+  );
+  const totalFatura=comprasFatura.reduce((a,l)=>a+l.val,0);
+  if(totalFatura<=0) return;
+
+  // Marca as compras como pagas (naFatura=false) — agora afetam o saldo
+  comprasFatura.forEach(l=>{
+    const lanc=state.lancamentos.find(x=>x.id===l.id);
+    if(lanc){ lanc.naFatura=false; lanc.faturaFechada=true; }
+  });
+
+  // Adiciona lançamento de pagamento da fatura
+  const dataHoje=hoje.toISOString().split('T')[0];
+  state.lancamentos.push({
+    id:state.nextId++,
+    desc:`Pagamento fatura ${c.nome} — ${MESES[mesAtual-1]}`,
+    cat:'Moradia',
+    tipo:'despesa',
+    val:totalFatura,
+    data:dataHoje,
+    pgto:'debito',
+    faturaCartao:true
+  });
+
+  await saveData();
+  render();
+  alert(`✅ Fatura do ${c.nome} paga! ${fmt(totalFatura)} descontados do saldo.`);
+}
+
+function toggleCartaoSelect(){
+  const pgto=document.getElementById('l-pgto').value;
+  const sel=document.getElementById('l-cartao');
+  if(!sel) return;
+  sel.style.display = pgto==='credito' ? 'block' : 'none';
+}
+
 function addLanc(){
   const desc=document.getElementById('l-desc').value.trim();
   const cat=document.getElementById('l-cat').value;
@@ -1547,8 +1700,11 @@ function addLanc(){
   const val=parseFloat(document.getElementById('l-val').value);
   const data=document.getElementById('l-data').value;
   const pgto=document.getElementById('l-pgto').value;
+  const cartaoId=pgto==='credito'?(document.getElementById('l-cartao')?.value||''):'';
   if(!desc||!val||val<=0) return;
-  state.lancamentos.push({id:state.nextId++,desc,cat,tipo,val,data,pgto});
+  // Se for crédito com cartão cadastrado, vai pra fatura do cartão (não afeta saldo)
+  const naFatura = pgto==='credito' && cartaoId;
+  state.lancamentos.push({id:state.nextId++,desc,cat,tipo,val,data,pgto,cartaoId,naFatura:!!naFatura});
   saveData();render();
 }
 function delLanc(id){state.lancamentos=state.lancamentos.filter(l=>l.id!==id);saveData();render();}
