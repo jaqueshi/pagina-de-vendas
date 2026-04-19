@@ -1930,9 +1930,15 @@ function renderDividas(){
           <span>${c.pct}%</span>
         </div>
       </div>
-      <div class="parcela-check">
+      <div class="parcela-check" style="flex-wrap:wrap;gap:8px">
         <input type="checkbox" id="pchk-${d.id}" onchange="marcarParcelaPaga(${d.id},this.checked)" ${pagas>=parcelas?'disabled':''} />
         <label for="pchk-${d.id}">${pagas>=parcelas?'✅ Todas parcelas pagas!':'Marcar parcela deste mês como paga'}</label>
+        ${(()=>{
+          const lancsDivida=state.lancamentos.filter(l=>l.origemDivida&&l.desc&&l.desc.startsWith(d.nome+' — parcela'));
+          return lancsDivida.length>0
+            ? `<button onclick="verLancamentosDivida(${d.id})" style="background:var(--red-bg);color:var(--red);border:1px solid #F5A89A;border-radius:var(--radius-sm);padding:3px 10px;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;">🗑️ Apagar lançamentos (${lancsDivida.length})</button>`
+            : '';
+        })()}
       </div>`:''}
       ${prox?`<div style="font-size:12px;margin-top:8px">${prox}</div>`:''}
       ${d.obs?`<div class="divida-obs">📝 ${d.obs}</div>`:''}
@@ -2019,6 +2025,21 @@ async function salvarEdicaoDivida(){
   closeModal('editar-divida');
 }
 
+function verLancamentosDivida(dividaId){
+  const d=(state.dividas||[]).find(d=>d.id===dividaId);
+  if(!d) return;
+  const lancsDivida=state.lancamentos.filter(l=>l.origemDivida&&l.desc&&l.desc.startsWith(d.nome+' — parcela'));
+  if(!lancsDivida.length){ alert('Nenhum lançamento encontrado para esta dívida.'); return; }
+  const lista=lancsDivida.map(l=>`• ${l.desc} — ${fmt(l.val)} (${fmtData(l.data)})`).join('\n');
+  const confirmar=confirm(`Lançamentos gerados pela dívida "${d.nome}":\n\n${lista}\n\nDeseja apagar todos esses lançamentos?`);
+  if(!confirmar) return;
+  state.lancamentos=state.lancamentos.filter(l=>!(l.origemDivida&&l.desc&&l.desc.startsWith(d.nome+' — parcela')));
+  // Resetar parcelas pagas
+  d.pagas=0;
+  if(d.status==='finalizada') d.status='pagando';
+  saveData(); render();
+}
+
 function marcarParcelaPaga(id, checked){
   const d=(state.dividas||[]).find(d=>d.id===id);
   if(!d) return;
@@ -2042,6 +2063,12 @@ function marcarParcelaPaga(id, checked){
       origemDivida:true
     });
   } else {
+    // Ao desmarcar, remove o último lançamento gerado por essa dívida
+    const lancsDivida=state.lancamentos.filter(l=>l.origemDivida&&l.desc&&l.desc.startsWith(d.nome+' — parcela'));
+    if(lancsDivida.length>0){
+      const ultimo=lancsDivida[lancsDivida.length-1];
+      state.lancamentos=state.lancamentos.filter(l=>l.id!==ultimo.id);
+    }
     d.pagas=Math.max((d.pagas||0)-1, 0);
   }
   if(d.pagas>=(d.parcelas||1)) d.status='finalizada';
