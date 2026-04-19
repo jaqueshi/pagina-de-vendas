@@ -1368,6 +1368,9 @@ function renderLanc(){
         <select id="l-cartao" style="display:none;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 10px;border:1px solid var(--accent);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;">
           ${cartoesOpts||'<option value="">Sem cartões cadastrados</option>'}
         </select>
+        <select id="l-parcelas" style="display:none;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 10px;border:1px solid var(--accent);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;width:100px;">
+          ${Array.from({length:60},(_,i)=>`<option value="${i+1}">${i+1}x</option>`).join('')}
+        </select>
         <input class="f-val" id="l-val" type="number" placeholder="R$ valor" min="0" step="0.01" />
         <input class="f-data" id="l-data" type="date" value="${hoje}" />
         <button class="btn-add" onclick="addLanc()">+ Adicionar</button>
@@ -1438,11 +1441,27 @@ function renderMetas(){
     const pct=Math.min(Math.round(m.atual/m.total*100),100);
     const falta=Math.max(m.total-m.atual,0);
     const concluida=m.atual>=m.total;
+    // Calcular mensalidade necessária
+    let mensalidadeHTML='';
+    if(!concluida && m.prazo){
+      const hoje=new Date();
+      const prazoDate=new Date(m.prazo+'T12:00:00');
+      const mesesRestantes=Math.max(1, Math.round((prazoDate-hoje)/(1000*60*60*24*30.44)));
+      const porMes=falta/mesesRestantes;
+      mensalidadeHTML=`<div style="background:var(--blue-bg);border:1px solid #A8C8F0;border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;color:var(--blue);margin-bottom:8px">
+        📊 Guarde <strong>${fmt(porMes)}/mês</strong> por <strong>${mesesRestantes} ${mesesRestantes===1?'mês':'meses'}</strong> para bater essa meta no prazo!
+      </div>`;
+    } else if(!concluida && !m.prazo && falta>0){
+      mensalidadeHTML=`<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;color:var(--muted);margin-bottom:8px">
+        💡 Adicione uma data limite para ver quanto guardar por mês
+      </div>`;
+    }
     return `<div class="meta-card" style="position:relative">
       <button class="btn-del" onclick="askDel(()=>delMeta(${m.id}))" style="position:absolute;top:10px;right:10px;font-size:16px;opacity:.5" title="Excluir meta">×</button>
       <div class="meta-top"><span class="meta-nome">${m.nome} ${concluida?'✅':''}</span></div>
       <div class="meta-sub">${fmt(m.atual)} de ${fmt(m.total)} • faltam ${fmt(falta)} <span class="meta-pct" style="margin-left:6px">${pct}%</span></div>
       ${m.prazo?`<div class="meta-prazo">📅 Prazo: ${new Date(m.prazo+'T12:00:00').toLocaleDateString('pt-BR')}</div>`:''}
+      ${mensalidadeHTML}
       <div class="meta-bar-bg"><div class="meta-bar-fill" style="width:${pct}%"></div></div>
       <div class="meta-acoes">
         <div class="meta-input-row">
@@ -1689,8 +1708,11 @@ async function pagarFatura(cartaoId){
 function toggleCartaoSelect(){
   const pgto=document.getElementById('l-pgto').value;
   const sel=document.getElementById('l-cartao');
+  const selParc=document.getElementById('l-parcelas');
   if(!sel) return;
-  sel.style.display = pgto==='credito' ? 'block' : 'none';
+  const mostrar = pgto==='credito';
+  sel.style.display = mostrar ? 'block' : 'none';
+  if(selParc) selParc.style.display = mostrar ? 'block' : 'none';
 }
 
 function addLanc(){
@@ -1701,10 +1723,32 @@ function addLanc(){
   const data=document.getElementById('l-data').value;
   const pgto=document.getElementById('l-pgto').value;
   const cartaoId=pgto==='credito'?(document.getElementById('l-cartao')?.value||''):'';
+  const parcelas=pgto==='credito'?parseInt(document.getElementById('l-parcelas')?.value||'1'):1;
   if(!desc||!val||val<=0) return;
   // Se for crédito com cartão cadastrado, vai pra fatura do cartão (não afeta saldo)
   const naFatura = pgto==='credito' && cartaoId;
-  state.lancamentos.push({id:state.nextId++,desc,cat,tipo,val,data,pgto,cartaoId,naFatura:!!naFatura});
+  if(parcelas>1 && pgto==='credito'){
+    // Criar uma entrada por parcela, distribuindo nos meses seguintes
+    const valParcela=parseFloat((val/parcelas).toFixed(2));
+    const dataBase=data?new Date(data+'T12:00:00'):new Date();
+    for(let i=0;i<parcelas;i++){
+      const dataParcela=new Date(dataBase.getFullYear(), dataBase.getMonth()+i, dataBase.getDate());
+      const dataStr=dataParcela.toISOString().split('T')[0];
+      state.lancamentos.push({
+        id:state.nextId++,
+        desc:`${desc} (${i+1}/${parcelas})`,
+        cat,tipo,
+        val:valParcela,
+        data:dataStr,
+        pgto,cartaoId,
+        naFatura:!!naFatura,
+        parcelaTotal:parcelas,
+        parcelaNum:i+1
+      });
+    }
+  } else {
+    state.lancamentos.push({id:state.nextId++,desc,cat,tipo,val,data,pgto,cartaoId,naFatura:!!naFatura});
+  }
   saveData();render();
 }
 function delLanc(id){state.lancamentos=state.lancamentos.filter(l=>l.id!==id);saveData();render();}
@@ -1978,8 +2022,28 @@ async function salvarEdicaoDivida(){
 function marcarParcelaPaga(id, checked){
   const d=(state.dividas||[]).find(d=>d.id===id);
   if(!d) return;
-  if(checked) d.pagas=Math.min((d.pagas||0)+1, d.parcelas||1);
-  else d.pagas=Math.max((d.pagas||0)-1, 0);
+  if(checked){
+    d.pagas=Math.min((d.pagas||0)+1, d.parcelas||1);
+    // Lançar automaticamente em Lançamentos
+    const c=calcularDivida(d);
+    const hoje=new Date().toISOString().split('T')[0];
+    const numParcela=d.pagas;
+    const totalParcelas=d.parcelas||1;
+    state.lancamentos.push({
+      id:state.nextId++,
+      desc:`${d.nome} — parcela ${numParcela}/${totalParcelas}${d.inst?' ('+d.inst+')':''}`,
+      cat:'Dívidas',
+      tipo:'despesa',
+      val:parseFloat(c.parcMensal.toFixed(2)),
+      data:hoje,
+      pgto:'',
+      cartaoId:'',
+      naFatura:false,
+      origemDivida:true
+    });
+  } else {
+    d.pagas=Math.max((d.pagas||0)-1, 0);
+  }
   if(d.pagas>=(d.parcelas||1)) d.status='finalizada';
   saveData(); render();
 }
