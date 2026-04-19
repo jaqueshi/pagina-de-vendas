@@ -1937,7 +1937,10 @@ function renderDividas(){
         ${(()=>{
           const lancsDivida=state.lancamentos.filter(l=>l.origemDivida&&l.desc&&l.desc.startsWith(d.nome+' — parcela'));
           return lancsDivida.length>0
-            ? `<button onclick="verLancamentosDivida(${d.id})" style="background:var(--red-bg);color:var(--red);border:1px solid #F5A89A;border-radius:var(--radius-sm);padding:3px 10px;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;">🗑️ Apagar lançamentos (${lancsDivida.length})</button>`
+            ? `<div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button onclick="apagarUmLancamentoDivida(${d.id})" style="background:var(--red-bg);color:var(--red);border:1px solid #F5A89A;border-radius:var(--radius-sm);padding:3px 10px;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;">🗑️ Apagar última (${lancsDivida.length})</button>
+                ${lancsDivida.length>1?`<button onclick="verLancamentosDivida(${d.id})" style="background:var(--red-bg);color:var(--red);border:1px solid #F5A89A;border-radius:var(--radius-sm);padding:3px 10px;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;">🗑️ Apagar todas</button>`:''}
+              </div>`
             : '';
         })()}
       </div>`:''}
@@ -2027,6 +2030,20 @@ async function salvarEdicaoDivida(){
   await saveData();
   render();
   closeModal('editar-divida');
+}
+
+function apagarUmLancamentoDivida(dividaId){
+  const d=(state.dividas||[]).find(d=>d.id===dividaId);
+  if(!d) return;
+  const lancsDivida=state.lancamentos.filter(l=>l.origemDivida&&l.desc&&l.desc.startsWith(d.nome+' — parcela'));
+  if(!lancsDivida.length) return;
+  const ultimo=lancsDivida[lancsDivida.length-1];
+  const confirmar=confirm(`Apagar o lançamento:\n• ${ultimo.desc} — ${fmt(ultimo.val)} (${fmtData(ultimo.data)})`);
+  if(!confirmar) return;
+  state.lancamentos=state.lancamentos.filter(l=>l.id!==ultimo.id);
+  d.pagas=Math.max((d.pagas||0)-1,0);
+  if(d.status==='finalizada') d.status='pagando';
+  saveData(); render();
 }
 
 function verLancamentosDivida(dividaId){
