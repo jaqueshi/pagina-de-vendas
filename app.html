@@ -760,7 +760,8 @@ body.dark{--bg:#1c2b18;--surface:#243d1e;--surface2:#2a4523;--border:#3a5e32;--t
 
 <!-- Modal Editar Dívida -->
 <div class="modal-overlay" id="modal-editar-divida">
-  <div class="modal-box" style="max-width:480px">
+  <div class="modal-box" style="max-width:480px;position:relative">
+    <button onclick="closeModal('editar-divida')" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;">×</button>
     <h3>✏️ Editar dívida</h3>
     <div id="ed-error" class="modal-error"></div>
     <div class="field"><label>Nome da dívida</label><input type="text" id="ed-nome" placeholder="Nome da dívida" /></div>
@@ -1942,7 +1943,10 @@ function renderDividas(){
       </div>`:''}
       ${prox?`<div style="font-size:12px;margin-top:8px">${prox}</div>`:''}
       ${d.obs?`<div class="divida-obs">📝 ${d.obs}</div>`:''}
-      <button class="btn-edit-divida" onclick="abrirEditarDivida(${d.id})">✏️ Editar</button>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn-edit-divida" onclick="abrirEditarDivida(${d.id})">✏️ Editar</button>
+        <button class="btn-edit-divida" onclick="askDel(()=>delDivida(${d.id}))" style="background:var(--red-bg);color:var(--red);border-color:#F5A89A">🗑️ Excluir</button>
+      </div>
     </div>`;
   }).join('');
 
