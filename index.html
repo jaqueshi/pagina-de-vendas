@@ -676,6 +676,7 @@
         <div class="plan-badge">Plano Capivara</div>
         <div class="plan-name">Plano Capivara</div>
         <div class="plan-price">R$19,90<sub>/mês</sub></div>
+        <div style="font-size:12px;color:#B5670D;background:#FEF3E2;border-radius:8px;padding:7px 12px;margin-bottom:16px;">🔄 Cobrança automática mensal — cancele quando quiser</div>
         <div class="plan-annual">ou R$167/ano — economize 28% (R$13,90/mês)</div>
         <div class="plan-divider"></div>
         <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Lançamentos ilimitados</div>
@@ -942,6 +943,9 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
     <div style="text-align:center;margin-top:12px;font-size:12px;color:#5a6e54;">
       Você será redirecionado para pagar via cartão, PIX ou boleto
     </div>
+    <div id="aviso-recorrencia" style="margin-top:14px;background:#FEF3E2;border:1px solid #F5C96A;border-radius:10px;padding:12px 14px;font-size:12px;color:#B5670D;line-height:1.6;text-align:center;">
+      🔄 <strong>Plano Mensal:</strong> cobrança automática de R$19,90 todo mês. Cancele quando quiser pelo app ou pelo suporte.<br>
+    </div>
   </div>
 </div>
 
@@ -969,14 +973,17 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
     const btnMensal = document.getElementById('btn-mensal');
     const btnAnual = document.getElementById('btn-anual');
     const preco = document.getElementById('checkout-preco');
+    const aviso = document.getElementById('aviso-recorrencia');
     if (plano === 'mensal') {
       btnMensal.style.background = '#6B9E52'; btnMensal.style.color = '#fff';
       btnAnual.style.background = 'transparent'; btnAnual.style.color = '#5a6e54';
       preco.innerHTML = 'R$19,90<span style="font-size:14px;font-weight:400;color:#5a6e54;">/mês</span>';
+      aviso.innerHTML = '🔄 <strong>Assinatura mensal:</strong> cobrança automática de R$19,90 todo mês. Cancele quando quiser pelo app ou suporte.';
     } else {
       btnAnual.style.background = '#6B9E52'; btnAnual.style.color = '#fff';
       btnMensal.style.background = 'transparent'; btnMensal.style.color = '#5a6e54';
       preco.innerHTML = 'R$167<span style="font-size:14px;font-weight:400;color:#5a6e54;">/ano</span>';
+      aviso.innerHTML = '💰 <strong>Pagamento único anual:</strong> R$167,00 cobrado uma única vez. Acesso por 12 meses.';
     }
   }
 
