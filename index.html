@@ -24,7 +24,7 @@
     --radius-sm: 10px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: auto; }
   body {
     font-family: 'DM Sans', sans-serif;
     background: var(--white);
@@ -910,7 +910,7 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
 <!-- MODAL CHECKOUT -->
 <div id="modal-checkout" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;">
   <div style="background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:460px;position:relative;max-height:90vh;overflow-y:auto;">
-    <button onclick="fecharCheckout()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#5a6e54;">×</button>
+    <button type="button" onclick="fecharCheckout()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#5a6e54;">×</button>
     <div style="text-align:center;margin-bottom:24px;">
       <div style="font-family:'Roboto',sans-serif;font-size:20px;font-weight:700;color:#1c2b18;margin-bottom:4px;">Plano Capivara</div>
       <div id="checkout-preco" style="font-size:32px;font-weight:700;color:#4a7538;font-family:'Roboto',sans-serif;">R$19,90<span style="font-size:14px;font-weight:400;color:#5a6e54;">/mês</span></div>
@@ -918,8 +918,8 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
 
     <!-- TOGGLE MENSAL/ANUAL -->
     <div style="display:flex;gap:8px;margin-bottom:24px;background:#f4f9f1;border-radius:40px;padding:4px;">
-      <button id="btn-mensal" onclick="selecionarPlano('mensal')" style="flex:1;padding:10px;border-radius:40px;border:none;cursor:pointer;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;background:#6B9E52;color:#fff;transition:all .2s;">Mensal — R$19,90</button>
-      <button id="btn-anual" onclick="selecionarPlano('anual')" style="flex:1;padding:10px;border-radius:40px;border:none;cursor:pointer;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;background:transparent;color:#5a6e54;transition:all .2s;">Anual — R$167 <span style="font-size:11px;background:#e8f2e2;color:#3B6D11;padding:2px 6px;border-radius:10px;">28% off</span></button>
+      <button type="button" id="btn-mensal" onclick="selecionarPlano('mensal')" style="flex:1;padding:10px;border-radius:40px;border:none;cursor:pointer;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;background:#6B9E52;color:#fff;transition:all .2s;">Mensal — R$19,90</button>
+      <button type="button" id="btn-anual" onclick="selecionarPlano('anual')" style="flex:1;padding:10px;border-radius:40px;border:none;cursor:pointer;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;background:transparent;color:#5a6e54;transition:all .2s;">Anual — R$167 <span style="font-size:11px;background:#e8f2e2;color:#3B6D11;padding:2px 6px;border-radius:10px;">28% off</span></button>
     </div>
 
     <div id="checkout-erro" style="display:none;background:#FDEEEC;border-radius:8px;padding:10px 14px;font-size:13px;color:#C0392B;margin-bottom:16px;"></div>
@@ -937,7 +937,7 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
       <input type="text" id="co-cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" style="width:100%;border:1px solid #D1E4C6;border-radius:8px;padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;color:#1c2b18;">
     </div>
 
-    <button id="btn-pagar" onclick="processarPagamento()" style="width:100%;background:#6B9E52;color:#fff;border:none;border-radius:40px;padding:16px;font-size:16px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .2s;">
+    <button type="button" id="btn-pagar" onclick="processarPagamento()" style="width:100%;background:#6B9E52;color:#fff;border:none;border-radius:40px;padding:16px;font-size:16px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .2s;">
       Gerar link de pagamento
     </button>
     <div style="text-align:center;margin-top:12px;font-size:12px;color:#5a6e54;">
@@ -1030,7 +1030,7 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
 
       if (data.success && data.linkPagamento) {
         fecharCheckout();
-       window.location.href = data.linkPagamento;
+        window.open(data.linkPagamento, '_blank');
       } else {
         erro.textContent = 'Erro ao gerar cobrança: ' + (data.erro || 'tente novamente.');
         erro.style.display = 'block';
