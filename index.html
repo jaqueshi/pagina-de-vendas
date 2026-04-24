@@ -1030,7 +1030,7 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
 
       if (data.success && data.linkPagamento) {
         fecharCheckout();
-        window.open(data.linkPagamento, '_blank');
+       window.location.href = data.linkPagamento;
       } else {
         erro.textContent = 'Erro ao gerar cobrança: ' + (data.erro || 'tente novamente.');
         erro.style.display = 'block';
