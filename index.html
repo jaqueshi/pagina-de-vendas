@@ -427,7 +427,7 @@
       <p style="font-size:13px; font-weight:500; color:var(--green); letter-spacing:.06em; text-transform:uppercase; margin-bottom:12px;">Dinheiro organizado, vida tranquila</p>
       <p class="hero-sub">Sem banco vinculado, sem complicação. Você lança, você enxerga, você decide. Simples assim — e funciona em qualquer dispositivo.</p>
       <div class="hero-btns">
-        <button class="btn-primary" onclick="abrirCheckout('mensal')" style="border:none;cursor:pointer;">Quero controlar minha grana</button>
+        <button type="button" class="btn-primary" onclick="abrirCheckout('mensal')" style="border:none;cursor:pointer;">Quero controlar minha grana</button>
         <a class="btn-ghost" href="#planos">Ver planos</a>
       </div>
       <div class="hero-stats">
@@ -590,9 +590,9 @@
     <div class="section-label">Para quem é</div>
     <h2>Feito pra quem quer ficar de bem com a grana no fim do mês</h2>
     <div class="audience-tabs">
-      <button class="tab-btn active" onclick="showTab('dividas')">Estou endividado</button>
-      <button class="tab-btn" onclick="showTab('zerinho')">Quero começar do zero</button>
-      <button class="tab-btn" onclick="showTab('planilha')">Uso planilha hoje</button>
+      <button type="button" class="tab-btn active" onclick="showTab('dividas')">Estou endividado</button>
+      <button type="button" class="tab-btn" onclick="showTab('zerinho')">Quero começar do zero</button>
+      <button type="button" class="tab-btn" onclick="showTab('planilha')">Uso planilha hoje</button>
     </div>
 
     <div class="tab-content active" id="tab-dividas">
@@ -687,7 +687,7 @@
         <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Importação CSV e Excel</div>
         <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Notificações inteligentes</div>
         <div class="plan-feat"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#6B9E52" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#6B9E52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Suporte via WhatsApp</div>
-        <button class="plan-btn plan-btn-primary" onclick="abrirCheckout('mensal')">Quero o Plano Capivara</button>
+        <button type="button" class="plan-btn plan-btn-primary" onclick="abrirCheckout('mensal')">Quero o Plano Capivara</button>
       </div>
     </div>
   </div>
@@ -699,7 +699,7 @@
     <img src="https://i.imgur.com/placeholder.png" alt="Capivara financeira" id="capy-img2" onerror="this.style.display='none'">
     <h2>Sua grana não vai se virar sozinha.<br>Mas você pode.</h2>
     <p>Assina hoje e a capivara te ajuda a organizar tudo. Ela aprova.</p>
-    <button class="btn-primary" onclick="abrirCheckout('mensal')" style="font-size:17px;padding:18px 40px;border:none;cursor:pointer;">Quero começar agora</button>
+    <button type="button" class="btn-primary" onclick="abrirCheckout('mensal')" style="font-size:17px;padding:18px 40px;border:none;cursor:pointer;">Quero começar agora</button>
   </div>
 </section>
 
@@ -708,23 +708,23 @@
   <div class="faq-inner">
     <h2>Perguntas frequentes</h2>
     <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">Precisa vincular meu banco?</button>
+      <button type="button" class="faq-q" onclick="toggleFaq(this)">Precisa vincular meu banco?</button>
       <div class="faq-a">Não! O app é 100% manual — você lança o que gasta. Isso é proposital: pesquisas mostram que quem lança manualmente tem mais consciência dos gastos. Mas você pode importar extratos em CSV ou Excel direto do seu banco.</div>
     </div>
     <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">Meus dados ficam seguros?</button>
+      <button type="button" class="faq-q" onclick="toggleFaq(this)">Meus dados ficam seguros?</button>
       <div class="faq-a">Sim. Os dados ficam armazenados no Supabase, um banco de dados seguro na nuvem. Nenhuma informação é compartilhada com terceiros.</div>
     </div>
     <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">Como instalo no celular?</button>
+      <button type="button" class="faq-q" onclick="toggleFaq(this)">Como instalo no celular?</button>
       <div class="faq-a">O app é um PWA (Progressive Web App). Você abre pelo navegador e clica em "Adicionar à tela inicial". Pronto — vira ícone no celular igual a um app normal, sem precisar de Play Store ou App Store.</div>
     </div>
     <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">Posso cancelar a qualquer momento?</button>
+      <button type="button" class="faq-q" onclick="toggleFaq(this)">Posso cancelar a qualquer momento?</button>
       <div class="faq-a">Depende do plano. No plano mensal você cancela quando quiser e não é cobrado no mês seguinte. No plano anual você paga o ano inteiro adiantado — por isso o desconto de 28%. Não há reembolso proporcional, então escolha o anual quando tiver certeza que vai usar. Se tiver dúvida, começa pelo mensal.</div>
     </div>
     <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">Tem suporte?</button>
+      <button type="button" class="faq-q" onclick="toggleFaq(this)">Tem suporte?</button>
       <div class="faq-a">Tem! Suporte direto via WhatsApp.</div>
     </div>
   </div>
@@ -748,7 +748,7 @@
 <!-- MODAL POLÍTICAS -->
 <div id="modal-politica" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;">
   <div style="background:#fff;border-radius:20px;padding:40px 36px;width:100%;max-width:700px;position:relative;">
-    <button onclick="fecharPolitica()" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:26px;cursor:pointer;color:#5a6e54;line-height:1;">×</button>
+    <button type="button" onclick="fecharPolitica()" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:26px;cursor:pointer;color:#5a6e54;line-height:1;">×</button>
     <div id="politica-conteudo"></div>
   </div>
 </div>
@@ -1020,6 +1020,9 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
     btn.textContent = 'Aguarde...';
     btn.disabled = true;
 
+    // Abre janela antes do fetch (necessário no Safari/iOS)
+    const novaJanela = window.open('', '_blank');
+
     try {
       const res = await fetch(SUPABASE_FUNC_URL, {
         method: 'POST',
@@ -1030,14 +1033,16 @@ document.getElementById('modal-politica').addEventListener('click', function(e) 
 
       if (data.success && data.linkPagamento) {
         fecharCheckout();
-        window.open(data.linkPagamento, '_blank');
+        novaJanela.location.href = data.linkPagamento;
       } else {
+        novaJanela.close();
         erro.textContent = 'Erro ao gerar cobrança: ' + (data.erro || 'tente novamente.');
         erro.style.display = 'block';
         btn.textContent = 'Gerar link de pagamento';
         btn.disabled = false;
       }
     } catch (e) {
+      novaJanela.close();
       erro.textContent = 'Erro de conexão. Tente novamente.';
       erro.style.display = 'block';
       btn.textContent = 'Gerar link de pagamento';
